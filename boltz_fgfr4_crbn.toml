@@ -1,0 +1,71 @@
+run_type = "staged_learning"
+device = "cuda:0"  # set torch device e.g. "cpu"
+tb_logdir = "tb_logs"  # name of the TensorBoard logging directory
+json_out_config = "_crbn_staged_learning.json"  # write this TOML to JSON
+
+[parameters]
+
+# If the run is to be continued after termination, the agent_file would
+# have to be replaced with the checkpoint file.
+summary_csv_prefix = "fgfr4_crbn_learning"  # prefix for the CSV file
+use_checkpoint = true  # if true read diversity filter from agent_file
+purge_memories = false  # if true purge all diversity filter memories after each stage
+
+## LinkInvent
+prior_file = "reinvent_prior/linkinvent_transformer_pubchem.prior"
+agent_file = "reinvent_prior/linkinvent_transformer_pubchem.prior"
+smiles_file = "boltz_fgfr4_crbn_warhead.smi"  # 2 warheads per line separated with '|'
+
+batch_size = 10          # network
+unique_sequences = true  # if true remove all duplicates raw sequences in each step
+                        # only here for backward compatibility
+randomize_smiles = true  # if true shuffle atoms in SMILES randomly
+tb_isim = false  # track iSIM similarity in TensorBoard
+
+[learning_strategy]
+  type = "dap"      # dap: only one supported
+  sigma = 128       # sigma of the RL reward function
+  rate = 0.0001     # for torch.optim
+
+
+[diversity_filter]  # optional, comment section out or remove if unneeded
+                    # NOTE: also memorizes all seen SMILES
+
+  type = "IdenticalMurckoScaffold" # IdenticalTopologicalScaffold,
+                                  # ScaffoldSimilarity, PenalizeSameSmiles
+  bucket_size = 25                 # memory size in number of compounds
+  minscore = 0.4                   # only memorize if this threshold is exceeded
+  minsimilarity = 0.4              # minimum similarity for ScaffoldSimilarity
+  penalty_multiplier = 0.5         # penalty factor for PenalizeSameSmiles
+
+
+  ### Stage 1
+  ### Note that stages must always be a list i.e. double brackets
+[[stage]]
+
+chkpt_file = 'boltz_fgfr_crbn.chkpt'  # name of the checkpoint file, can be reused as agent
+
+termination = "simple"  # termination criterion fot this stage
+max_score = 0.36  # terminate if this total score is exceeded
+min_steps = 10  # run for at least this number of steps
+max_steps = 20  # terminate entire run when exceeded
+
+[stage.scoring]
+type = "geometric_mean"  # aggregation function
+
+[[stage.scoring.component]]
+[stage.scoring.component.BoltzScore]
+[[stage.scoring.component.BoltzScore.endpoint]]
+name = "docking with boltz"
+weight = 1
+params.poi_name='fgfr4'
+params.poi_seq='MVSLDLPLDPLWEFPRDRLVLGKPLGEGCFGQVVRAEAFGMDPARPDQASTVAVKMLKDNASDKDLADLVSEMEVMKLIGRHKNIINLLGVCTQEGPLYVIVECAAKGNLREFLRARRPPGSSEGPLSFPVLVSCAYQVARGMQYLESRKCIHRDLAARNVLVTEDNVMKIADFGLARGVHHIDYYKKTSNGRLPVKWMAPEALFDRVYTHQSDVWSFGILLWEIFTLGGSPYPGIPVEELFSLLREGHRMDRPPHCPPELYGLMRECWHAAPSQRPTFKQLVEALDKVLLAVSHHHHHH'
+params.poi_pocket= [33,105,108,35,173,172,100,76,104,162,102,72,55,174,25,103,86]
+params.is_covalent_poi = true
+params.lig_poi_part ='N(c1c(c(cc(c1))C)Nc1nc2c(cn1)cc(cc2)c1c(Cl)c(OC)cc(OC)c1Cl)C(=O)CC'
+params.lig_warhead_smarts='[C:1]-C-C=O'
+params.covalent_resid_can= 104
+params.covalent_res_atomname='SG'
+params.e3_name='crbn'
+params.calculate_path='data/fgfr4'
+params.generate_bestcif=true

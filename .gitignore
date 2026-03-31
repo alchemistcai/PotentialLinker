@@ -1,3 +1,7 @@
+data/
+reinvent_prior/
+*.chkpt
+benchmark/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

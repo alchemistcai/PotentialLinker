@@ -1,0 +1,12 @@
+run_type = "sampling"
+device = "cuda:0"  # set torch device e.g. "cpu"
+json_out_config = "crbn_sampling.json"  # write this TOML to JSON
+
+[parameters]
+## LinkInvent: find a linker/scaffold to link two fragments
+model_file = "boltz_fgfr_crbn.chkpt"
+smiles_file = "boltz_fgfr4_crbn_warhead.smi"  # 2 warheads per line separated with '|'
+output_file = 'boltz_fgfr_crbn_sampling.csv'  # sampled SMILES and NLL in CSV format
+num_smiles = 200  # number of SMILES to be sampled, 1 per input SMILES
+unique_molecules = true  # if true remove all duplicatesd canonicalize smiles
+randomize_smiles = false # if true shuffle atoms in SMILES randomly
