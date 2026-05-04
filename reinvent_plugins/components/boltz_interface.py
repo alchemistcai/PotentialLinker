@@ -26,20 +26,31 @@ def generate_boltz_ternary_yaml(
     pocket_e3: list[int],
     msa_e3: str,
     output_filename: str,
-    contact_ppi: list[tuple[int, int, float, float]] | None = None,
+    contact_ppi: list[tuple[int, int]] | None = None,
+    template_cif_or_path:str=''
 ):
-    pocket_poi_input = ','.join(f'[P, {resid}]' for resid in pocket_poi)
-    pocket_e3_input = ','.join(f'[E, {resid}]' for resid in pocket_e3)
-    contact_input = ''
+    pocket_restraint=''
+    if pocket_poi or pocket_e3:
+        pocket_poi_input = ','.join(f'[P, {resid}]' for resid in pocket_poi)
+        pocket_e3_input = ','.join(f'[E, {resid}]' for resid in pocket_e3)
+        pocket_restraint=f"""  - pocket:
+      binder: L
+      contacts: [ {pocket_poi_input} {',' if pocket_poi and pocket_e3 else ''} {pocket_e3_input} ]
+      max_distance: 4
+      force: true"""+'\n'
+    ppi_restraint = ''
     if contact_ppi:
-        contact_input = '\n'.join(f'''  - contact:
+        ppi_restraint = '\n'.join(f'''  - contact:
       token1: [P, {ppi[0]}]
       token2: [E, {ppi[1]}]
-      min_distance: {ppi[2]}
-      max_distance: {ppi[3]}
+      max_distance: 4
       force: true''' for ppi in contact_ppi) + '\n'
-
-    template = f'''sequences:
+    template_restraint=''
+    if template_cif_or_path:     
+        template_restraint=f"""templates:
+    - cif: {os.path.abspath(template_cif_or_path)}"""+'\n'
+    # trying to parse pymol cif leads to bad RMSD and awkward geometry when the template files miss internal residues 
+    yaml_config = f'''sequences:
   - protein:
       id: [P]
       sequence: {seq_poi}
@@ -52,17 +63,12 @@ def generate_boltz_ternary_yaml(
       id: [L]
       smiles: '{lig_smi}'
 constraints:
-  - pocket:
-      binder: L
-      contacts: [ {pocket_poi_input} ,{pocket_e3_input} ]
-      max_distance: 4
-      force: true
-{contact_input}properties:
+{pocket_restraint}{ppi_restraint}{template_restraint}properties:
   - affinity:
       binder: L
 '''
     with open(output_filename, 'w') as f:
-        f.write(template)
+        f.write(yaml_config)
 
 
 def generate_boltz_poi_yaml(lig_smi: str, seq_poi: str, pocket_poi: list[int],
@@ -240,7 +246,8 @@ def calculate_affinity_score(
     pocket_e3: list[int]|None=None,
     output_path: str='data/precompute',
     msa_path: str = 'data/MSA',
-    contact_ppi: list[tuple[int, int, float, float]] | None = None,
+    contact_ppi: list[tuple[int, int]] | None = None,
+    template_cif_or_path:str='',
     extract_from_precomputed:bool=False,
     only_ternary:bool=False
 )-> list[tuple[str,str,str,float,float,float,str,float,int,float,IntOrInf]]:
@@ -255,13 +262,15 @@ def calculate_affinity_score(
             seq_e3=SEQ_CRBN
         else:
             logging.error(f'Sequence of the given e3 {name_e3} is not given and e3 is not crbn or vhl. Will lead to failure.')
-    if not pocket_e3:
+    if pocket_e3 is None:
         if name_e3=='vhl':
             pocket_e3=POCKET_VHL
         elif name_e3=='crbn':
             pocket_e3=POCKET_CRBN
         else:
             logging.error(f'Pocket of the given e3 {name_e3} is not given and e3 is not crbn or vhl. Will lead to failure.')
+    if not os.path.exists(output_path):
+        os.makedirs(output_path,exist_ok=True)
     msa_poi = os.path.join(msa_path, name_poi + '.a3m')
     msa_e3 = os.path.join(msa_path, name_e3 + '.a3m')
     yaml_ternary = os.path.join(
@@ -271,7 +280,7 @@ def calculate_affinity_score(
     yaml_e3 = os.path.join(output_path,
                            f'{name_poi}_{name_e3}_{inchikey}_e3.yaml')
     generate_boltz_ternary_yaml(lig_smi, seq_poi, pocket_poi, msa_poi, seq_e3,
-                                pocket_e3, msa_e3, yaml_ternary, contact_ppi)
+                                pocket_e3, msa_e3, yaml_ternary, contact_ppi,template_cif_or_path)
     lgKd_ternary=run_boltz_lgKd_prediction(yaml_ternary,extract_from_precomputed)
     if not only_ternary:
         generate_boltz_poi_yaml(lig_smi, seq_poi, pocket_poi, msa_poi, yaml_poi)

@@ -50,7 +50,7 @@ def parse_ccd2mol_and_smi(cif_path: str)->tuple[Chem.Mol|None,str]:
                 bonds.append((atom1, atom2, bond_type))
             smi_loop= block.find('_pdbx_chem_comp_descriptor.',['comp_id','type','descriptor'])
             for smi_row in smi_loop:
-                if smi_row[1]=='SMILES':
+                if smi_row[1]=='SMILES_CANONICAL':
                     ccd_smi=smi_row[2].replace('"','')
                     break
             if not atoms:
@@ -156,7 +156,7 @@ def get_atomname_map_ccd2boltz_with_smi(
         raise ValueError(f"MCS match failed: {ccd_code}")
     return atomname_map,smi_ccd
 
-def clean_structure(pdbid:str,ligid:str,chain_poi:str,chain_lig:str,workdir:str='data/PDB',save_cif:bool=True,chain_e3:str='',canon_atomname:bool=False):
+def clean_structure(pdbid:str,ligid:str,chain_poi:str,chain_lig:str,workdir:str='data/PDB',chain_e3:str='',canon_atomname:bool=False):
     st_parser=MMCIFParser(auth_chains=True,auth_residues=True,QUIET=True)
     st_parser.get_structure(pdbid,os.path.join(workdir,f'{pdbid}.cif'))
     mmcif_dict=st_parser._mmcif_dict
@@ -172,24 +172,26 @@ def clean_structure(pdbid:str,ligid:str,chain_poi:str,chain_lig:str,workdir:str=
             seq_poi_canon=seq.replace('\n','')
         if chain_e3 and chain_e3 in chains:
             seq_e3_canon=seq.replace('\n','')
-    if save_cif:
-        os.makedirs(os.path.join(workdir,'clean'), exist_ok=True)
-        cmd.reinitialize()
-        cmd.load(os.path.join(workdir,pdbid+'.cif'),'ref')
-        cmd.select('lig',f'chain {chain_lig} and resn {ligid}')
-        cmd.select('poi',f'chain {chain_poi} and not hetatm')
-        cmd.alter('lig','chain="L"')
-        cmd.alter('poi','chain="P"')
-        if chain_e3:
-            cmd.select('e3',f'chain {chain_e3} and not hetatm')
-            cmd.alter('e3','chain="E"')
-        atomname_ccd2boltz,smi=get_atomname_map_ccd2boltz_with_smi(ligid,workdir,only_get_smi=canon_atomname)
-        if canon_atomname:
-            cmd.alter(f'lig',f'name+="_T"') # avoid possible same name 
-            for ccd_name,boltz_name in atomname_ccd2boltz.items():
-                cmd.alter(f'lig and name {ccd_name}_T',f'name="{boltz_name}"')
-        cmd.save(os.path.join(workdir,'clean',f'{pdbid}_ref.cif'),'poi or lig'+(' or e3' if chain_e3 else ''))
-    return (seq_poi_canon,seq_auth2can_poi,smi)+((seq_e3_canon,seq_auth2can_e3) if chain_e3 else ())
+    os.makedirs(os.path.join(workdir,'clean'), exist_ok=True)
+    cmd.reinitialize()
+    cmd.load(os.path.join(workdir,pdbid+'.cif'),'ref')
+    cmd.select('lig',f'chain {chain_lig} and resn {ligid}')
+    cmd.select('poi',f'chain {chain_poi} and not hetatm')
+    cmd.alter('lig','chain="L"')
+    cmd.alter('lig','segi="L"')
+    cmd.alter('poi','chain="P"')
+    cmd.alter('poi','segi="P"')
+    if chain_e3:
+        cmd.select('e3',f'chain {chain_e3} and not hetatm')
+        cmd.alter('e3','chain="E"')
+        cmd.alter('e3','segi="E"')
+    atomname_ccd2boltz,smi=get_atomname_map_ccd2boltz_with_smi(ligid,workdir,only_get_smi=(not canon_atomname))
+    if canon_atomname:
+        cmd.alter(f'lig',f'name+="_T"') # avoid possible same name 
+        for ccd_name,boltz_name in atomname_ccd2boltz.items():
+            cmd.alter(f'lig and name {ccd_name}_T',f'name="{boltz_name}"')
+    cmd.save(os.path.join(workdir,'clean',f'{pdbid}_ref.cif'),'poi or lig'+(' or e3' if chain_e3 else ''))
+    return (seq_poi_canon,seq_auth2can_poi,smi)+((seq_e3_canon,seq_auth2can_e3) if chain_e3 else ())+((atomname_ccd2boltz,) if canon_atomname else ())
 
 def get_hetatm_residue(st:Structure,resname:str):
     for residue in st.get_residues():
@@ -197,7 +199,7 @@ def get_hetatm_residue(st:Structure,resname:str):
             # assume that st only has 1 hetatm residue
             return residue
 
-def search_clean_pocket(st:Structure,lig_resname:str,seq_offset_auto2can:dict[int,int],radius:float=0) -> list[int]:
+def search_clean_pocket(st:Structure,lig_resname:str,seq_auth2can:dict[int,int],radius:float=0) -> list[int]:
     ns=NeighborSearch(list(st.get_atoms()))
     hetatm_res=get_hetatm_residue(st,lig_resname)
     pocket_residues=set()
@@ -213,7 +215,7 @@ def search_clean_pocket(st:Structure,lig_resname:str,seq_offset_auto2can:dict[in
             if len(pocket_residues)>=4:
                 break
     pocket_residues=[res for res in pocket_residues if res != hetatm_res]
-    pocket_boltz_resids = [seq_offset_auto2can[res.id[1]] for res in pocket_residues]
+    pocket_boltz_resids = [seq_auth2can[res.id[1]] for res in pocket_residues]
     return pocket_boltz_resids
 
 def search_clean_ppi(st:Structure,chain_poi:str,chain_lig:str,chain_e3:str,seq_auto2can_poi:dict[int,int],seq_auto2can_e3:dict[int,int]):
@@ -258,10 +260,10 @@ def get_ppi_info_from_pdb_info(pdbid:str,ligid:str,chain_poi:str,chain_lig:str,c
     logging.info(f'Processing {pdbid}')
     st_parser=MMCIFParser(auth_chains=True,auth_residues=True,QUIET=True)
     pdbid=pdbid.lower()
-    seq_poi,seq_auth2can_poi,smi,seq_e3,seq_auth2can_e3=clean_structure(pdbid,ligid,chain_poi,chain_lig,workdir,chain_e3=chain_e3,canon_atomname=True)
+    seq_poi,seq_auth2can_poi,smi,seq_e3,seq_auth2can_e3,atomname_ccd2boltz=clean_structure(pdbid,ligid,chain_poi,chain_lig,workdir,chain_e3=chain_e3,canon_atomname=True)
     st=st_parser.get_structure(pdbid,os.path.join(workdir,'clean',f'{pdbid}_ref.cif'))
     ppi,pocket_poi,pocket_e3=search_clean_ppi(st,'P','L','E',seq_auth2can_poi,seq_auth2can_e3)
-    return seq_poi,seq_e3,seq_auth2can_poi,seq_auth2can_e3,smi,ppi,pocket_poi,pocket_e3
+    return seq_poi,seq_e3,seq_auth2can_poi,seq_auth2can_e3,smi,ppi,pocket_poi,pocket_e3,atomname_ccd2boltz
 
 def reindex_boltz_cif(cif_file:str,raw_cif_file:str,map_record:pd.DataFrame):
     '''Just re-calculate the residue '''

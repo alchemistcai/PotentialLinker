@@ -28,7 +28,7 @@ pip install xxx
 wget zenodoxxxxre
 tar xxxx
 
-
+pip install gemmi==0.7.5 dockq # gemmi can't parse pymol saved cif file in version 0.6.5
 mamba install pymol-open-source ipykernel biopython numpy=1.26.4 scikit-learn=1.6.1
 ```
 
@@ -57,7 +57,7 @@ isim = [
     - Again, CCD gives an reacted product SMILES if it is a covalent ligand.
 - Modify `boltz_fgfr4_vhl|crbn.toml` and adjust parameters in `[[stage.scoring.component.BoltzScore.endpoint]]`.
   - Log name, checkpoint names and other related parameters should be altered too.
-  - `covalent_xxx` parameters are only required for covalent PROTACs (See fgfr4 examples). 
+  - `covalent_xxx` parameters are only required for covalent PROTACs (See fgfr4 examples).
   - `params.lig_warhead_smarts` is the covalent warhead part after reaction. `[C:1]-C-C=O` is the added warhead and [X:1] is used to mark the covalent connection point.
 
 ## Sampling PROTACs
@@ -70,6 +70,7 @@ isim = [
 
 - Enable predicting affinity for ligands with more than 56 atoms.
 - Atom name method is not changed because it effects affinity scores calculation. "CL1xx","BR1xx" with more than 4 characters are treated as bad atoms right now.
+- Alter `pyproject.toml` to install gemmi 0.7.5. Fix `parse/mmcif.py` so that it can read pymol cif.
 - You can clone Boltz official repo and alter it by yourself to keep update with it.
 
 ## Cite Us

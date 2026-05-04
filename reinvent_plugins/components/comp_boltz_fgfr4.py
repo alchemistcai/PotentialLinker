@@ -230,6 +230,8 @@ def calculate_one_affinity_score(
             pocket_e3=POCKET_CRBN
         else:
             logging.error(f'Pocket of the given e3 {name_e3} is not given and e3 is not crbn or vhl. Will lead to failure.')
+    if not os.path.exists(output_path):
+        os.makedirs(output_path,exist_ok=True)
     msa_poi = os.path.join(msa_path, name_poi + '.a3m')
     msa_e3 = os.path.join(msa_path, name_e3 + '.a3m')
     yaml_ternary = os.path.join(
