@@ -235,7 +235,8 @@ def search_clean_ppi(st:Structure,chain_poi:str,chain_lig:str,chain_e3:str,seq_a
     contact_pairs=set()
     for poi_res in poi_resis:
         for atom in poi_res:
-            ppi_e3_resis=set(ns.search(atom.coord,4,level='R')) & e3_resis
+            ppi_e3_resis=set(ns.search(atom.coord,6,level='R')) & e3_resis
+            # 4A for PPI may be too sparse for certein PROTACs, like 6w8i
             for e3_res in ppi_e3_resis:
                 contact_pairs.add((poi_res.id[1],e3_res.id[1]))
     ppi = [(seq_auto2can_poi[poi_resi],seq_auto2can_e3[e3_resi]) for poi_resi,e3_resi in contact_pairs]
