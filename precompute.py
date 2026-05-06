@@ -9,8 +9,8 @@ os.environ['BOLTZ_CACHE']= '/root/autodl-tmp/boltz'
 tmp_result=[]
 for lig_smi,inchikey,name_poi,seq_poi,pocket_poi,name_e3 in pedia_extend[['PROTAC SMILES','inchikey','pdbid','seq_can','boltz_pocket','E3 Ligase']].itertuples(False):
     tmp_result.extend(calculate_affinity_score(lig_smi,inchikey,name_poi,seq_poi,literal_eval(pocket_poi),name_e3,extract_from_precomputed=True))
-sc_df=pd.DataFrame(tmp_result,columns=['pdbid','E3 Ligase','inchikey','lgKd_poi','lgKd_e3','lgKd_ternary','ref_model','dist_ub','has_surf_lys','bsa','num_clash'])
-sc_df=sc_df.astype({'lgKd_poi':float,'lgKd_e3':float,'lgKd_ternary':float,'ref_model':str,'dist_ub':float,'has_surf_lys':int,'bsa':float,'num_clash':float})
+sc_df=pd.DataFrame(tmp_result,columns=['pdbid','E3 Ligase','inchikey','lgKd_poi','lgKd_e3','lgKd_ternary','ref_model','dist_ub','has_surf_lys','bsa','num_clash','closest_lys_resid']) # FIXME:need to recalculate because of a new field
+sc_df=sc_df.astype({'lgKd_poi':float,'lgKd_e3':float,'lgKd_ternary':float,'ref_model':str,'dist_ub':float,'has_surf_lys':int,'bsa':float,'num_clash':float,'closest_lys_resid':int})
 pedia_precompute=pd.merge(pedia_extend,sc_df,on=['pdbid', 'E3 Ligase', 'inchikey'], how='inner').drop_duplicates(['pdbid', 'E3 Ligase', 'inchikey','ref_model'],keep='first') # activity in different cells are different records
 pedia_precompute['Active/Inactive']=(pedia_precompute['Active/Inactive']=='Active').astype(int)
 pedia_precompute['lg_alpha']=pedia_precompute['lgKd_poi']+pedia_precompute['lgKd_e3']-pedia_precompute['lgKd_ternary']

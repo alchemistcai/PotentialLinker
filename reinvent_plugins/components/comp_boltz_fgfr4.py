@@ -1,7 +1,6 @@
 __all__ = ["BoltzScore"]
 from collections import defaultdict
 import logging
-from math import isinf
 import os
 from pathlib import Path
 import shutil
@@ -12,113 +11,32 @@ import numpy as np
 import io
 from Bio.PDB import  PDBParser, NeighborSearch
 from pydantic.dataclasses import dataclass
-from rdkit.Chem import MolToInchiKey,MolFromSmiles,AddHs,MolFromSmarts,AssignStereochemistry,AllChem
-from util import clean_a3m
+from util import clean_a3m, smi2inchikey
 from reinvent_plugins.components.component_results import ComponentResults
 from reinvent_plugins.components.add_tag import add_tag
 from reinvent_plugins.normalize import normalize_smiles
 from boltz.data.msa.mmseqs2 import run_mmseqs2
-from reinvent_plugins.components.boltz_interface import POCKET_CRBN,SEQ_CRBN,POCKET_VHL,SEQ_VHL,run_boltz_lgKd_prediction
+from reinvent_plugins.components.boltz_interface import POCKET_CRBN,SEQ_CRBN,POCKET_VHL,SEQ_VHL,run_boltz_lgKd_prediction,generate_boltz_ternary_yaml
 
 logging.basicConfig(level=logging.INFO)
 scaler=joblib.load(Path(__file__).parent.parent.parent/'data/scaler.pkl')
-Ws=(-0.4427,-0.05851,-0.2191,0.3496)
-def generate_boltz_covalent_or_not_ternary_yaml(
-    lig_smi: str,
-    seq_poi: str,
-    pocket_poi: list[int],
-    msa_poi: str,
-    seq_e3: str,
-    pocket_e3: list[int],
-    msa_e3: str,
-    output_filename: str,
-    is_covalent_poi: bool,
-    lig_poi_part:str='N(c1c(c(cc(c1))C)Nc1nc2c(cn1)cc(cc2)c1c(Cl)c(OC)cc(OC)c1Cl)C(=O)CC', # FGFR4 BLU9931
-    lig_warhead_smarts: str='[C:1]-C-C=O', #  reaction site after addition
-    covalent_resid_can: int= 104, # (CYS 552) - offset 448
-    covalent_res_atomname: str='SG',
-):
-    pocket_poi_input = ','.join(f'[P, {resid}]' for resid in pocket_poi)
-    pocket_e3_input = ','.join(f'[E, {resid}]' for resid in pocket_e3)
-    covalent_constraint=''
-    if is_covalent_poi:
-        tmp_mol=MolFromSmiles(lig_smi)
-        if tmp_mol is None:
-            logging.error(f'Given lig_smi {lig_smi} is not a valid smiles.')
-            return None
-        tmp_mol = AddHs(tmp_mol)
-        poi_mol=MolFromSmiles(lig_poi_part)
-        if poi_mol is None:
-            logging.error(f'Given lig_smi {lig_smi} fails to add Hs.')
-            return None
-        poi_match=tmp_mol.GetSubstructMatch(poi_mol)
-        if not poi_match:
-            logging.error(f'Given Poi part substructure {lig_poi_part} not found.')
-            return None
-        poi_atom_ids=set(poi_match)
-        pattern=MolFromSmarts(lig_warhead_smarts)
-        matches=tmp_mol.GetSubstructMatches(pattern)
-        if not matches:
-            logging.error(f'Given Poi covalent warhead SMARTS {lig_warhead_smarts} not found.')
-            return None
-        poi_matches=[]
-        for match in matches:
-            if match[0] in poi_atom_ids:
-                all_in_poi = all(idx in poi_atom_ids for idx in match)
-                if all_in_poi:
-                    poi_matches.append(match)
-        if not poi_matches:
-            logging.error(f'Given Poi covalent warhead SMARTS {lig_warhead_smarts} not in Poi part substructure {lig_poi_part}.')
-            return None
-        selected_match = random.choice(poi_matches)
-        target_atom_idx = selected_match[0]
-        canonical_order = AllChem.CanonicalRankAtoms(tmp_mol) # get atom name according to boltz schema
-        AssignStereochemistry(tmp_mol, force=True, cleanIt=True)
-        atom_name_to_idx = {}
-        for atom, can_idx in zip(tmp_mol.GetAtoms(), canonical_order):
-            atom_name = atom.GetSymbol().upper() + str(can_idx + 1)
-            atom_name_to_idx[atom.GetIdx()] = atom_name
-        target_atom_name = atom_name_to_idx.get(target_atom_idx)
-        covalent_constraint=f"""\n  - bond:
-      atom1: [L, 1, {target_atom_name}]
-      atom2: [P, {covalent_resid_can}, {covalent_res_atomname}]"""
 
-    template = f'''sequences:
-  - protein:
-      id: P
-      sequence: {seq_poi}
-      msa: {os.path.abspath(msa_poi) if seq_poi!=seq_e3 else os.path.abspath(msa_e3)}
-  - protein:
-      id: E
-      sequence: {seq_e3}
-      msa: {os.path.abspath(msa_e3)}
-  - ligand:
-      id: L
-      smiles: '{lig_smi}'
-constraints:{covalent_constraint}
-  - pocket:
-      binder: L
-      contacts: [ {pocket_poi_input} ,{pocket_e3_input} ]
-      max_distance: 4
-      force: true
-properties:
-  - affinity:
-      binder: L
-'''
-    with open(output_filename, 'w') as f:
-        f.write(template)
 
-def run_superpose_dist_ub_calc(yaml_path: str,generate_bestcif:bool=True) -> tuple[str,float,float]:
-    '''Use P4ward generated CRL complex models to calculate (superposed model filename, min UB-LYS distance, num_clash).
+def run_superpose_dist_ub_calc(yaml_path: str,generate_bestcif:bool=True,name_e3_origin:str='') -> tuple[str,float,float,int]:
+    '''Use P4ward generated CRL complex models to calculate (superposed model filename, min UB-LYS distance, num_clash, closest LYS boltz2 residue index).
 
+    num_clash is defined by: 
     Jofily P, Kalyaanamoorthy S. P4ward: An Automated Modeling Platform for Protac Ternary Complexes. J Chem Inf Model. 2025 Aug 25;65(16):8806-8818. doi: 10.1021/acs.jcim.5c00614. Epub 2025 Aug 13. PMID: 40801829.
     '''
     ypath = Path(yaml_path).absolute()
-    scoring_items = ('Fail_to_calculate',float('inf'),float('inf'))
+    min_dist=float('inf')
+    num_clash=float('inf')
+    closest_lys_resid=-10000
+    scoring_items = ('Fail_to_calculate',min_dist,num_clash,closest_lys_resid)
     logging.info(f'Calculating superposing sc items: {ypath.stem}')
     predicted_structure_cif = ypath.parent / f'boltz_results_{ypath.stem}' / 'predictions' / ypath.stem / f'{ypath.stem}_model_0.cif'
     if not os.path.exists(predicted_structure_cif):
-        return ('no_3d_cif_file',float('inf'),float('inf'))
+        return ('no_3d_cif_file',min_dist,num_clash,closest_lys_resid)
     try:
         cmd.reinitialize()
         cmd.load(predicted_structure_cif, 'ternary')
@@ -138,12 +56,17 @@ def run_superpose_dist_ub_calc(yaml_path: str,generate_bestcif:bool=True) -> tup
             ]
             if not lys_poi_surf_resis_no_docking:
                 logging.debug(str(lys_poi_sasa_info_no_docking))
-                return ('no_surf_lys',float('inf'),float('inf'))
-        ref_structure_dir = Path(__file__).parent.parent.parent / 'data/crl_models/' / (
-            'crbn/' if 'crbn' in str(predicted_structure_cif) else 'vhl/')
-        min_dist=float('inf')
+                return ('no_surf_lys',min_dist,num_clash,closest_lys_resid)
+        if name_e3_origin:
+            ref_structure_dir=ref_structure_dir = Path(__file__).parent.parent.parent / 'data/crl_models' /name_e3_origin
+        elif 'crbn' in str(predicted_structure_cif):
+            ref_structure_dir=ref_structure_dir = Path(__file__).parent.parent.parent / 'data/crl_models' /'crbn/'
+        elif 'vhl' in str(predicted_structure_cif):
+            ref_structure_dir=ref_structure_dir = Path(__file__).parent.parent.parent / 'data/crl_models' /'vhl/'
+        if not ref_structure_dir.exists():
+            return ('no_UB_E2_cif_file',min_dist,num_clash,closest_lys_resid)
+
         min_ref_file=''
-        num_clash=float('inf')
         for ref_file in os.listdir(ref_structure_dir):
             dist = float('inf')
             if not ref_file.endswith('clean.pdb'):
@@ -156,8 +79,8 @@ def run_superpose_dist_ub_calc(yaml_path: str,generate_bestcif:bool=True) -> tup
                 cmd.load(ref_structure_dir / ref_file, 'ref')
                 cmd.super('ref and chain C','ternary and chain E') # Don't move ternary!!! Altering Coord will affect SASA calculation
                 cmd.select('ubc', 'ref and chain U and resi 75 and name C')
-                dist = min(
-                    cmd.get_distance('ubc', f'chain P and resn LYS and name NZ and resi {resi}')
+                dist,lys_resi = min(
+                    (cmd.get_distance('ubc', f'chain P and resn LYS and name NZ and resi {resi}'),resi)
                     for resi in lys_poi_surf_resis)
                 # clash
                 cmd.remove('chain C')
@@ -182,13 +105,14 @@ def run_superpose_dist_ub_calc(yaml_path: str,generate_bestcif:bool=True) -> tup
                     min_dist=dist
                     min_ref_file=ref_file
                     num_clash=clash
+                    closest_lys_resid=lys_resi
                     if generate_bestcif:
                         cmd.save(ypath.parent/f'{ypath.stem}_best.cif','ref')
             except Exception as e:
                 logging.warning(f'Fail to treat {ypath.stem} superposing to {ref_file}')
                 logging.warning(e)
                 continue
-        return (min_ref_file,min_dist,num_clash)
+        return (min_ref_file,min_dist,num_clash,closest_lys_resid)
     except Exception as e:
         logging.warning(f'Fail to treat {ypath.stem} calculating superposing scores.')
         logging.warning(e)
@@ -204,6 +128,10 @@ def calculate_one_affinity_score(
     pocket_e3: list[int]|None=None,
     output_path: str='data/precompute',
     msa_path: str = 'data/MSA',
+    contact_ppi: list[tuple[int, int]] | None = None,
+    template_cif_or_path:str='',
+    template_chain_poi_can:str='',
+    template_chain_e3_can:str='',
     extract_from_precomputed:bool=False,
     is_covalent_poi:bool=False,
     lig_poi_part:str='N(c1c(c(cc(c1))C)Nc1nc2c(cn1)cc(cc2)c1c(Cl)c(OC)cc(OC)c1Cl)C(=O)CC',
@@ -212,44 +140,45 @@ def calculate_one_affinity_score(
     covalent_res_atomname: str='SG',
     generate_bestcif:bool=True,
     scaler=scaler,
+    name_e3_origin:str=''
 )-> tuple[float,dict[str,float|str]]:
-    '''Calculate a * lgKD_ternary + b * dist_ub_square + c * num_clash + bias. 
+    '''Calculate Harmonic(lgKD_ternary, dist_ub_square,num_clash), each one is normalized. 
     '''
-    inchikey=MolToInchiKey(MolFromSmiles(lig_smi))
+    inchikey=smi2inchikey(lig_smi)
     if not seq_e3:
         if name_e3=='vhl':
             seq_e3=SEQ_VHL
         elif name_e3=='crbn':
             seq_e3=SEQ_CRBN
         else:
-            logging.error(f'Sequence of the given e3 {name_e3} is not given and e3 is not crbn or vhl. Will lead to failure.')
+            logging.warning(f'Sequence of the given e3 {name_e3} is not given and e3 is not crbn or vhl. May lead to failure.')
     if not pocket_e3:
         if name_e3=='vhl':
             pocket_e3=POCKET_VHL
         elif name_e3=='crbn':
             pocket_e3=POCKET_CRBN
         else:
-            logging.error(f'Pocket of the given e3 {name_e3} is not given and e3 is not crbn or vhl. Will lead to failure.')
+            logging.warning(f'Pocket of the given e3 {name_e3} is not given and e3 is not crbn or vhl. May lead to failure.')
     if not os.path.exists(output_path):
         os.makedirs(output_path,exist_ok=True)
     msa_poi = os.path.join(msa_path, name_poi + '.a3m')
     msa_e3 = os.path.join(msa_path, name_e3 + '.a3m')
     yaml_ternary = os.path.join(
         output_path, f'{name_poi}_{name_e3}_{inchikey}_ternary.yaml')
-    generate_boltz_covalent_or_not_ternary_yaml(lig_smi, seq_poi, pocket_poi, msa_poi, seq_e3,
-                                pocket_e3, msa_e3, yaml_ternary,is_covalent_poi,lig_poi_part,lig_warhead_smarts,covalent_resid_can,covalent_res_atomname)
+    generate_boltz_ternary_yaml(lig_smi, seq_poi, pocket_poi, msa_poi, seq_e3,
+                                pocket_e3, msa_e3, yaml_ternary,is_covalent_poi,lig_poi_part,lig_warhead_smarts,covalent_resid_can,covalent_res_atomname,contact_ppi,template_cif_or_path,template_chain_poi_can,template_chain_e3_can)
     lgKd_ternary=run_boltz_lgKd_prediction(yaml_ternary,extract_from_precomputed)
-    super_scores=run_superpose_dist_ub_calc(yaml_ternary,generate_bestcif)
+    super_scores=run_superpose_dist_ub_calc(yaml_ternary,generate_bestcif,name_e3_origin)
     dist_ub_square=super_scores[1]**2
     num_clash=super_scores[2]
     if dist_ub_square>10000:
         logging.warning(f'dist_ub is bigger than 100, the reference structure / fail reason is {super_scores[0]}')
     if np.any(np.isinf([[lgKd_ternary,dist_ub_square,num_clash]])):
-        score=float('-inf')
+        score=0
     else:
-        score=float(3/((1/(1-scaler.transform([[lgKd_ternary,dist_ub_square,num_clash]]))).sum(axis=1)))
-    logging.info(f'lgKd_ternary: {lgKd_ternary:.3f},dist_ub_square: {dist_ub_square:.3f}, num_clash: {num_clash}, boltz weighted score: {score:.3f}')
-    return score,{'lgKd_ternary':lgKd_ternary,'dist_ub_square':dist_ub_square,'dist_ub':super_scores[1],'num_clash':num_clash,'ref_model':super_scores[0]}
+        score=float(3/((1/(1-scaler.transform([[lgKd_ternary,dist_ub_square,num_clash]])+1e-10)).sum(axis=1)))
+    logging.info(f'lgKd_ternary: {lgKd_ternary:.3f},dist_ub_square: {dist_ub_square:.3f}, num_clash: {num_clash}, closest LYS resid: {super_scores[3]}, harmonic score: {score:.3f}')
+    return score,{'lgKd_ternary':lgKd_ternary,'dist_ub_square':dist_ub_square,'dist_ub':super_scores[1],'num_clash':num_clash,'ref_model':super_scores[0],'closest_lys_resid':super_scores[3]}
 
 logger = logging.getLogger(__name__)
 
@@ -322,4 +251,4 @@ class BoltzScore:
             for key,item in result[1].items():
                 metadata[key].append(item)
         self._internal_step += 1
-        return ComponentResults([scores],metadata=metadata)
+        return ComponentResults([scores],metadata=metadata) # FIXME: recalculate it because of a new field

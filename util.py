@@ -33,18 +33,27 @@ def get_a3m(seq:str,file_prefix:str) -> None:
 def dockq_for_protac(native_cif:str,model_cif:str) -> dict[str, float]:
     '''Calculate dockq between native and model cif.
     Hardcode chain map to PEL:PEL in this repo.'''
-    model=load_PDB(model_cif,small_molecule=True)
-    native=load_PDB(native_cif,small_molecule=True)
-    chain_map= {'P':'P','E':'E','L':'L',}
-    results,total_dockq=run_on_all_native_interfaces(model,native,chain_map=chain_map)
-    # global_dockq=total_dockq/len(results)
-    # For small ligands, max(dockq)=2/3, so global_dockq is not suitable for PROTACs 
-    protac_results={}
-    protac_results['PE_DockQ']=results['PE']['DockQ']
-    protac_results['PE_iRMSD']=results['PE']['iRMSD']
-    protac_results['PE_LRMSD']=results['PE']['LRMSD']
-    protac_results['PE_fnat']=results['PE']['fnat']
-    protac_results['PL_LRMSD']=results['PL']['LRMSD']
-    protac_results['EL_LRMSD']=results['EL']['LRMSD']
+    try:
+        model=load_PDB(model_cif,small_molecule=True)
+        native=load_PDB(native_cif,small_molecule=True)
+        chain_map= {'P':'P','E':'E','L':'L',}
+        results,total_dockq=run_on_all_native_interfaces(model,native,chain_map=chain_map)
+        # global_dockq=total_dockq/len(results)
+        # For small ligands, max(dockq)=2/3, min(dockq)=1/3, so global_dockq is not suitable for PROTACs 
+        protac_results={}
+        protac_results['PE_DockQ']=results['PE']['DockQ']
+        protac_results['PE_iRMSD']=results['PE']['iRMSD']
+        protac_results['PE_LRMSD']=results['PE']['LRMSD']
+        protac_results['PE_fnat']=results['PE']['fnat']
+        protac_results['PL_LRMSD']=results['PL']['LRMSD']
+        protac_results['EL_LRMSD']=results['EL']['LRMSD']
+    except:
+        protac_results={}
+        protac_results['PE_DockQ']=0
+        protac_results['PE_iRMSD']=0
+        protac_results['PE_LRMSD']=0
+        protac_results['PE_fnat']=0
+        protac_results['PL_LRMSD']=0
+        protac_results['EL_LRMSD']=0
     return protac_results
 
