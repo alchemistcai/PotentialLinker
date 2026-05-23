@@ -73,6 +73,22 @@ isim = [
 - Alter `pyproject.toml` to install gemmi 0.7.5. Fix `parse/mmcif.py` so that it can read pymol cif.
 - You can clone Boltz official repo and alter it by yourself to keep update with it.
 
+## Note
+
+Residue idx of Boltz starts from 1, while alignment of biopython starts from 0.
+
+Protein sequences in PDB may have extra artifical residues (expression tags and so on). Be careful if the tags have LYS and were predicted as the PTM sites. See the sequence annotations in PDB if there is a warning.
+
+## Acknowledge
+
+Thanks for these cool works:
+
+- boltz2: restrained 3D complex structure and affinity prediction
+- reinvent4: customized reinforcement learning for molecule linker generation
+- PROTACpedia: PDB structure and PROTAC exam information
+- qPTM: Ub-PTM site compiled from proteomics source
+- P4ward: CRBN/VHL-E2-Ub complex modeling
+
 ## Cite Us
 
 xxxx
