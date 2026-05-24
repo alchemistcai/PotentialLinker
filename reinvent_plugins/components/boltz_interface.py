@@ -198,19 +198,34 @@ def run_boltz_lgKd_prediction(yaml_path: str,extract_from_precomputed:bool=False
         return float('inf')
     return float('inf')
 
-def run_superpose_scoring_items_calc(yaml_path: str) -> list[tuple[str,float,int,float,IntOrInf,int]]:
+def run_superpose_scoring_items_calc(yaml_path: str,generate_bestcif:bool=True,best_record_only:bool=False,name_e3_origin:str='',calc_bsa:bool=True) -> list[list]|list:
     '''Use P4ward generated CRL complex models to calculate 
-    [(superposed model filename, min UB-LYS distance, has surface lys after Boltz docking, buried surface area,clash atoms,closest lys resid)].
+    [[superposed model filename, min UB-LYS distance, has surface lys after Boltz docking, buried surface area,clash atoms,closest lys resid].
+
+    If `best_record_only`, will return [superposed model filename, min UB-LYS distance, ...].
+
+    If name_e3_origin is given, use your E2/Ub/E3 reference directory instead.
+
+    If not `calc_bsa`, bsa and surface lys info will be not in results. 
 
     num_clash is defined by:
     Jofily P, Kalyaanamoorthy S. P4ward: An Automated Modeling Platform for Protac Ternary Complexes. J Chem Inf Model. 2025 Aug 25;65(16):8806-8818. doi: 10.1021/acs.jcim.5c00614. Epub 2025 Aug 13. PMID: 40801829.
     '''
     ypath = Path(yaml_path).absolute()
-    scoring_items = [('Fail_to_calculate',float('inf'),0,0,float('inf'),-10000)]
+    min_dist=float('inf')
+    num_clash=float('inf')
+    bsa=0
+    lys_poi_surf_resis_after_docking=0
+    closest_lys_resid=-10000
+    scoring_items = [['Fail_to_calculate',min_dist,num_clash,closest_lys_resid]]
+    if calc_bsa:
+        scoring_items[0].insert(2,lys_poi_surf_resis_after_docking)
+        scoring_items[0].insert(3,bsa)
     logging.info(f'Calculating superposing sc items: {ypath.stem}')
     predicted_structure_cif = ypath.parent / f'boltz_results_{ypath.stem}' / 'predictions' / ypath.stem / f'{ypath.stem}_model_0.cif'
     if not os.path.exists(predicted_structure_cif):
-        return [('no_3d_cif_file',float('inf'),0,0,float('inf'),-10000)]
+        scoring_items[0][0]='no_3d_cif_file'
+        return scoring_items[0] if best_record_only else scoring_items
     try:
         cmd.reinitialize()
         cmd.load(predicted_structure_cif, 'ternary')
@@ -223,22 +238,25 @@ def run_superpose_scoring_items_calc(yaml_path: str) -> list[tuple[str,float,int
         # dict[(objname,segi,chain,resi), sasa_rel]
         # relative side-chain SASA >= 40% is on surface (haddock surface cutoff).
         if not lys_poi_surf_resis_after_docking: # fallback to undocked Lys
+        # suitable for flexible segments
             cmd.copy_to('poi','ternary and chain P')
-            lys_poi_sasa_info_no_docking = cmd.get_sasa_relative('poi and chain P and resn LYS',
-                                                    subsele='sidechain')
-            lys_poi_surf_resis=lys_poi_surf_resis_no_docking = [
+            lys_poi_sasa_info_no_docking = cmd.get_sasa_relative('poi and chain P and resn LYS',subsele='sidechain')
+            lys_poi_surf_resis=lys_poi_surf_reses_no_docking = [
                 idx_str for (*_, idx_str), sasa_rel in lys_poi_sasa_info_no_docking.items()
             ]
-            if not lys_poi_surf_resis_no_docking:
+            if not lys_poi_surf_reses_no_docking:
                 logging.debug(str(lys_poi_sasa_info_no_docking))
-                return [('no_surf_lys',float('inf'),0,0,float('inf'),-10000)]
-        if 'crbn' in str(predicted_structure_cif):
-            ref_structure_dir_tail='crbn/'
+                scoring_items[0][0]='no_surf_lys'
+                return scoring_items[0] if best_record_only else scoring_items
+        if name_e3_origin:
+            ref_structure_dir = Path(__file__).parent.parent.parent / 'data/crl_models' /name_e3_origin
         elif 'crbn' in str(predicted_structure_cif):
-            ref_structure_dir_tail='vhl/'
-        else:
-            return [('no_UB_E2_cif_file',float('inf'),0,0,float('inf'),-10000)]
-        ref_structure_dir = Path(__file__).parent.parent.parent / 'data/crl_models' / ref_structure_dir_tail
+            ref_structure_dir = Path(__file__).parent.parent.parent / 'data/crl_models' /'crbn/'
+        elif 'vhl' in str(predicted_structure_cif):
+            ref_structure_dir = Path(__file__).parent.parent.parent / 'data/crl_models' /'vhl/'
+        if not ref_structure_dir.exists():
+            scoring_items[0][0]='no_UB_E2_cif_file'
+            return scoring_items[0] if best_record_only else scoring_items
         scoring_items_list=[]
         for ref_file in os.listdir(ref_structure_dir):
             dist = float('inf')
@@ -260,6 +278,7 @@ def run_superpose_scoring_items_calc(yaml_path: str) -> list[tuple[str,float,int
                     for resi in lys_poi_surf_resis)
 
                 # bsa
+                # very fast,so calculate it anyway
                 cmd.remove('chain C')
                 cmd.copy_to('ref', 'ternary')
                 sasa_poi_and_e2e3ub = cmd.get_area('ref and chain P')
@@ -283,18 +302,25 @@ def run_superpose_scoring_items_calc(yaml_path: str) -> list[tuple[str,float,int
                         # then this receptor atom is clashing with at least one atom for the model
                         clash += 1
                 scoring_items_list.append(
-                    (ref_file, dist,int(bool(lys_poi_surf_resis_after_docking)), bsa_after_superposing, clash,lys_resid))
+                    [ref_file, dist, clash,lys_resid])
+                if calc_bsa:
+                    scoring_items_list[-1].insert(2,int(bool(lys_poi_surf_resis_after_docking)))
+                    scoring_items_list[-1].insert(3,bsa_after_superposing)
+                if dist<min_dist:
+                    min_dist=dist
+                    num_clash=clash
+                    closest_lys_resid=lys_resid
+                    if generate_bestcif:
+                        cmd.save(ypath.parent/f'{ypath.stem}_best.cif','ref')
             except Exception as e:
                 logging.warning(f'Fail to treat {ypath.stem} superposing to {ref_file}')
                 logging.warning(e)
                 continue
-        if scoring_items_list:
-            scoring_items=scoring_items_list
-        return scoring_items
+        return min(scoring_items_list,key=lambda row:row[1]) if best_record_only else scoring_items_list
     except Exception as e:
         logging.warning(f'Fail to treat {ypath.stem} calculating superposing scores.')
         logging.warning(e)
-        return scoring_items
+        return scoring_items[0] if best_record_only else scoring_items
 
 
 def calculate_affinity_score(

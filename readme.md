@@ -10,7 +10,6 @@ On RTX4080 32G, a ternary spends about 2 mins. One RTX4060 8G, it will takes 10 
 REINVENT4 and boltz supports CPU devices. However, it will be too slow for boltz.
 
 ```bash
-os.environ['BOLTZ_CACHE']='/root/autodl-tmp/boltz'
 mamba create -n boltz python=3.11
 mamba activate boltz
 git clone https://github.com/MolecularAI/REINVENT4.git --depth 1
@@ -20,6 +19,8 @@ cd ..
 git clone xxxx boltz
 cd boltz
 pip install -e .[cuda]
+export BOLTZ_CACHE = /root/autodl-tmp/boltz # change to your boltz cache dir, can be defined in .bashrc
+# The first time you predict using boltz, it will download automatically. Or you can download mols and checkpoints by yourself
 cd ..
 git clone xxx
 cd potential_linker

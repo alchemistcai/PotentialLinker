@@ -47,7 +47,7 @@ def get_a3m(seq:str,file_prefix:str) -> None:
         os.remove(tmp_filepath)
         shutil.rmtree(f'{file_prefix}_env',True)
     except Exception as e:
-        logging.error(e)
+        pass
 
 def dockq_for_protac(native_cif:str,model_cif:str) -> dict[str, float]:
     '''Calculate dockq between native and model cif.
@@ -130,7 +130,7 @@ def fetch_uniprot_uid2seq(uniprot_ids:list[str]):
         df=pd.DataFrame(columns=['UniprotID','seq'])
         df.astype({'UniprotID':str,'seq':str})
     for uniprot_id in uniprot_ids:
-        if df['UniprotID'].isin(uniprot_id).any():
+        if df['UniprotID'].isin([uniprot_id]).any():
             try:
                 with urllib.request.urlopen(f"https://rest.uniprot.org/uniprotkb/{uniprot_id}.json?fields=sequence") as response:
                     data_json = response.read().decode('utf-8')
@@ -252,7 +252,9 @@ def update_all_uniprot_ub_info(uniprot_ids: list[str], max_workers: int = 10):
                 logging.error(e) 
     if not results:
         return pd.DataFrame(columns=['UniprotID','uniprot_lys_resid', 'evidence_score'])
-    return pd.concat(results, axis=0, ignore_index=True)
+    dfs=pd.concat(results, axis=0, ignore_index=True)
+    dfs.to_csv('data/ub_site/uniprot_evidences.csv',index=False)
+    return dfs
     
 def cif_boltz2uniprot(cif_file,seq_poi_boltz,seq_poi_uniprot):
     cif_file_path=Path(os.path.abspath(cif_file))

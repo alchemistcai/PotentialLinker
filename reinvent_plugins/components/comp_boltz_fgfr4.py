@@ -1,10 +1,11 @@
 __all__ = ["BoltzScore"]
 from collections import defaultdict
+from functools import partial
 import logging
 import os
 from pathlib import Path
 import shutil
-import random
+from typing import Callable
 import joblib
 from pymol import cmd
 import numpy as np
@@ -16,107 +17,16 @@ from reinvent_plugins.components.component_results import ComponentResults
 from reinvent_plugins.components.add_tag import add_tag
 from reinvent_plugins.normalize import normalize_smiles
 from boltz.data.msa.mmseqs2 import run_mmseqs2
-from reinvent_plugins.components.boltz_interface import POCKET_CRBN,SEQ_CRBN,POCKET_VHL,SEQ_VHL,run_boltz_lgKd_prediction,generate_boltz_ternary_yaml
+from reinvent_plugins.components.boltz_interface import POCKET_CRBN,SEQ_CRBN,POCKET_VHL,SEQ_VHL, IntOrInf,run_boltz_lgKd_prediction,generate_boltz_ternary_yaml, run_superpose_scoring_items_calc
 
 logging.basicConfig(level=logging.INFO)
 scaler=joblib.load(Path(__file__).parent.parent.parent/'data/scaler.pkl')
 
+run_superpose_dist_ub_calc:Callable[...,tuple[str,float,IntOrInf,int]]=partial(run_superpose_scoring_items_calc,best_record_only=True,calc_bsa=False)
+'''Align a given yaml file's prediction structure to P4ward CRL reference, and return [uperposed model filename, min UB-LYS distance, clash atoms,closest lys resid].
 
-def run_superpose_dist_ub_calc(yaml_path: str,generate_bestcif:bool=True,name_e3_origin:str='') -> tuple[str,float,float,int]:
-    '''Use P4ward generated CRL complex models to calculate (superposed model filename, min UB-LYS distance, num_clash, closest LYS boltz2 residue index).
-
-    num_clash is defined by: 
-    Jofily P, Kalyaanamoorthy S. P4ward: An Automated Modeling Platform for Protac Ternary Complexes. J Chem Inf Model. 2025 Aug 25;65(16):8806-8818. doi: 10.1021/acs.jcim.5c00614. Epub 2025 Aug 13. PMID: 40801829.
-    '''
-    ypath = Path(yaml_path).absolute()
-    min_dist=float('inf')
-    num_clash=float('inf')
-    closest_lys_resid=-10000
-    scoring_items = ('Fail_to_calculate',min_dist,num_clash,closest_lys_resid)
-    logging.info(f'Calculating superposing sc items: {ypath.stem}')
-    predicted_structure_cif = ypath.parent / f'boltz_results_{ypath.stem}' / 'predictions' / ypath.stem / f'{ypath.stem}_model_0.cif'
-    if not os.path.exists(predicted_structure_cif):
-        return ('no_3d_cif_file',min_dist,num_clash,closest_lys_resid)
-    try:
-        cmd.reinitialize()
-        cmd.load(predicted_structure_cif, 'ternary')
-        lys_poi_sasa_info_after_docking = cmd.get_sasa_relative('chain P and resn LYS',
-                                                  subsele='sidechain')
-        lys_poi_surf_resis=lys_poi_surf_resis_after_docking = [
-            idx_str for (*_, idx_str), sasa_rel in lys_poi_sasa_info_after_docking.items() if sasa_rel >= 0.4
-        ]
-        # dict[(objname,segi,chain,resi), sasa_rel]
-        # relative side-chain SASA >= 40% is on surface (haddock surface cutoff).
-        if not lys_poi_surf_resis_after_docking: # fallback to undocked Lys
-            cmd.copy_to('poi','ternary and chain P')
-            lys_poi_sasa_info_no_docking = cmd.get_sasa_relative('poi and chain P and resn LYS',
-                                                    subsele='sidechain')
-            lys_poi_surf_resis=lys_poi_surf_resis_no_docking = [
-                idx_str for (*_, idx_str), sasa_rel in lys_poi_sasa_info_no_docking.items()
-            ]
-            if not lys_poi_surf_resis_no_docking:
-                logging.debug(str(lys_poi_sasa_info_no_docking))
-                return ('no_surf_lys',min_dist,num_clash,closest_lys_resid)
-        if name_e3_origin:
-            ref_structure_dir=ref_structure_dir = Path(__file__).parent.parent.parent / 'data/crl_models' /name_e3_origin
-        elif 'crbn' in str(predicted_structure_cif):
-            ref_structure_dir=ref_structure_dir = Path(__file__).parent.parent.parent / 'data/crl_models' /'crbn/'
-        elif 'vhl' in str(predicted_structure_cif):
-            ref_structure_dir=ref_structure_dir = Path(__file__).parent.parent.parent / 'data/crl_models' /'vhl/'
-        if not ref_structure_dir.exists():
-            return ('no_UB_E2_cif_file',min_dist,num_clash,closest_lys_resid)
-
-        min_ref_file=''
-        for ref_file in os.listdir(ref_structure_dir):
-            dist = float('inf')
-            if not ref_file.endswith('clean.pdb'):
-                continue
-            try:
-                # distance
-                cmd.reinitialize()
-                cmd.load(predicted_structure_cif,
-                         'ternary')  # reload again to avoid unknown exceptions
-                cmd.load(ref_structure_dir / ref_file, 'ref')
-                cmd.super('ref and chain C','ternary and chain E') # Don't move ternary!!! Altering Coord will affect SASA calculation
-                cmd.select('ubc', 'ref and chain U and resi 75 and name C')
-                dist,lys_resi = min(
-                    (cmd.get_distance('ubc', f'chain P and resn LYS and name NZ and resi {resi}'),resi)
-                    for resi in lys_poi_surf_resis)
-                # clash
-                cmd.remove('chain C')
-                cmd.copy_to('ref', 'ternary')
-                parser = PDBParser(QUIET=True)
-                st = parser.get_structure('pymol_export', io.StringIO(cmd.get_pdbstr('ref')))
-                poi_atoms = st[0]['P'].get_atoms()
-                ns_atoms = []
-                for chain in st[0]:
-                    if chain.id not in [
-                            'L', 'E','P'
-                    ]:  # these clashes are already calculated in boltz
-                        ns_atoms.extend(chain.get_atoms())
-                ns = NeighborSearch(list(ns_atoms))
-                clash = 0
-                for atom in poi_atoms:
-                    close_atoms = ns.search(atom.coord, 1)
-                    if len(close_atoms) > 0:
-                        # then this receptor atom is clashing with at least one atom for the model
-                        clash += 1
-                if dist<min_dist:
-                    min_dist=dist
-                    min_ref_file=ref_file
-                    num_clash=clash
-                    closest_lys_resid=lys_resi
-                    if generate_bestcif:
-                        cmd.save(ypath.parent/f'{ypath.stem}_best.cif','ref')
-            except Exception as e:
-                logging.warning(f'Fail to treat {ypath.stem} superposing to {ref_file}')
-                logging.warning(e)
-                continue
-        return (min_ref_file,min_dist,num_clash,closest_lys_resid)
-    except Exception as e:
-        logging.warning(f'Fail to treat {ypath.stem} calculating superposing scores.')
-        logging.warning(e)
-        return scoring_items
+If name_e3_origin is given, use your E2/Ub/E3 reference directory instead.
+'''
 
 def calculate_one_affinity_score(
     lig_smi: str,

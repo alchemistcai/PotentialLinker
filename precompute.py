@@ -5,7 +5,7 @@ import os
 pedia_extend=pd.read_csv('data/pedia_extend.csv',header='infer')
 
 
-os.environ['BOLTZ_CACHE']= '/root/autodl-tmp/boltz'
+os.environ.setdefault('BOLTZ_CACHE','/root/autodl-tmp/boltz')
 tmp_result=[]
 for lig_smi,inchikey,name_poi,seq_poi,pocket_poi,name_e3 in pedia_extend[['PROTAC SMILES','inchikey','pdbid','seq_can','boltz_pocket','E3 Ligase']].itertuples(False):
     tmp_result.extend(calculate_affinity_score(lig_smi,inchikey,name_poi,seq_poi,literal_eval(pocket_poi),name_e3,extract_from_precomputed=True))
