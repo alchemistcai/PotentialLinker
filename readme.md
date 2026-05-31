@@ -1,4 +1,4 @@
-# PotentialLinker, a PROTAC linker generator in a linearly additive energy space
+# PotentialLinker: A Ubiquitination Kinetics-Guided PROTAC Linker Reinforcement Learning Framework
 
 ![](fgfr4_d11_C552_K607_11.2.png)
 
