@@ -1,15 +1,11 @@
 import logging
 import os
 from Bio.PDB.MMCIFParser import MMCIFParser
-from Bio.PDB.PDBIO import Select
 from Bio.PDB.NeighborSearch import NeighborSearch
 from Bio.PDB.Structure import Structure
-from Bio.PDB.Chain import Chain
 from Bio.PDB.Residue import Residue
-from Bio.PDB.Atom import Atom
 import urllib.request
 import gemmi
-import pandas as pd
 from rdkit import Chem
 from rdkit.Chem import rdFMCS
 from pymol import cmd
@@ -28,60 +24,60 @@ def download_ccd_file(code: str, save_dir: str = "ccd_files", mirror: str = CCD_
         raise FileNotFoundError(f"Fail to download CCD file {code}: {e}")
 
 def parse_ccd2mol_and_smi(cif_path: str)->tuple[Chem.Mol|None,str]:
-        """Parse CCD cif by gemmi, and convert it to a rdkit Mol with SMILES."""
-        ccd_smi=''
-        try:
-            doc = gemmi.cif.read_file(cif_path)
-            block = doc.sole_block()
-            atoms = []
-            bonds = []
-            atom_loop = block.find('_pdbe_chem_comp_atom_depiction.', ['atom_id', 'element'])
-            if not atom_loop:
-                raise ValueError(f"No _chem_comp_atom table in ccd file: {cif_path}")
-            for atom_row in atom_loop:
-                atom_id = atom_row[0]
-                element = atom_row[1]
-                if element:
-                    atoms.append((atom_id, element))
-            bond_loop = block.find('_chem_comp_bond.', ['atom_id_1', 'atom_id_2', 'value_order'])
-            for bond_row in bond_loop:
-                atom1, atom2 = bond_row[0], bond_row[1]
-                bond_type = bond_row[2]
-                bonds.append((atom1, atom2, bond_type))
-            smi_loop= block.find('_pdbx_chem_comp_descriptor.',['comp_id','type','descriptor'])
-            for smi_row in smi_loop:
-                if smi_row[1]=='SMILES_CANONICAL':
-                    ccd_smi=smi_row[2].replace('"','')
-                    break
-            if not atoms:
-                raise ValueError(f"No atoms in cif file: {cif_path}")
-            mol = Chem.RWMol()
-            atom_idx_map = {}
-            for atom_id, element in atoms:
-                atom_id=atom_id.strip()
-                atomic_num = Chem.GetPeriodicTable().GetAtomicNumber(element)
-                if atomic_num == 0:
-                    continue
-                atom = Chem.Atom(atomic_num)
-                atom.SetProp("_Name", atom_id)
-                idx = mol.AddAtom(atom)
-                atom_idx_map[atom_id] = idx
-            bond_type_map = {
-                'SING': Chem.BondType.SINGLE,
-                'DOUB': Chem.BondType.DOUBLE,
-                'TRIP': Chem.BondType.TRIPLE,
-                'AROM': Chem.BondType.AROMATIC
-            }
-            for atom1, atom2, btype in bonds:
-                if atom1 in atom_idx_map and atom2 in atom_idx_map:
-                    bt = bond_type_map.get(btype, Chem.BondType.SINGLE)
-                    mol.AddBond(atom_idx_map[atom1], atom_idx_map[atom2], bt)
-            mol = mol.GetMol()
-            Chem.SanitizeMol(mol, Chem.SanitizeFlags.SANITIZE_ALL)
-            return mol,ccd_smi
-        except Exception as e:
-            logging.error(f"Fail to parse ccd file: {e}")
-            return None,ccd_smi
+    """Parse CCD cif by gemmi, and convert it to a rdkit Mol with SMILES."""
+    ccd_smi=''
+    try:
+        doc = gemmi.cif.read_file(cif_path)
+        block = doc.sole_block()
+        atoms = []
+        bonds = []
+        atom_loop = block.find('_pdbe_chem_comp_atom_depiction.', ['atom_id', 'element'])
+        if not atom_loop:
+            raise ValueError(f"No _chem_comp_atom table in ccd file: {cif_path}")
+        for atom_row in atom_loop:
+            atom_id = atom_row[0]
+            element = atom_row[1]
+            if element:
+                atoms.append((atom_id, element))
+        bond_loop = block.find('_chem_comp_bond.', ['atom_id_1', 'atom_id_2', 'value_order'])
+        for bond_row in bond_loop:
+            atom1, atom2 = bond_row[0], bond_row[1]
+            bond_type = bond_row[2]
+            bonds.append((atom1, atom2, bond_type))
+        smi_loop= block.find('_pdbx_chem_comp_descriptor.',['comp_id','type','descriptor'])
+        for smi_row in smi_loop:
+            if smi_row[1]=='SMILES_CANONICAL':
+                ccd_smi=smi_row[2].replace('"','')
+                break
+        if not atoms:
+            raise ValueError(f"No atoms in cif file: {cif_path}")
+        mol = Chem.RWMol()
+        atom_idx_map = {}
+        for atom_id, element in atoms:
+            atom_id=atom_id.strip()
+            atomic_num = Chem.GetPeriodicTable().GetAtomicNumber(element)
+            if atomic_num == 0:
+                continue
+            atom = Chem.Atom(atomic_num)
+            atom.SetProp("_Name", atom_id)
+            idx = mol.AddAtom(atom)
+            atom_idx_map[atom_id] = idx
+        bond_type_map = {
+            'SING': Chem.BondType.SINGLE,
+            'DOUB': Chem.BondType.DOUBLE,
+            'TRIP': Chem.BondType.TRIPLE,
+            'AROM': Chem.BondType.AROMATIC
+        }
+        for atom1, atom2, btype in bonds:
+            if atom1 in atom_idx_map and atom2 in atom_idx_map:
+                bt = bond_type_map.get(btype, Chem.BondType.SINGLE)
+                mol.AddBond(atom_idx_map[atom1], atom_idx_map[atom2], bt)
+        mol = mol.GetMol()
+        Chem.SanitizeMol(mol, Chem.SanitizeFlags.SANITIZE_ALL)
+        return mol,ccd_smi
+    except Exception as e:
+        logging.error(f"Fail to parse ccd file: {e}")
+        return None,ccd_smi
 def get_atomname_map_ccd2boltz_with_smi(
     ccd_code: str,
     ccd_dir: str = "ccd_files",
@@ -249,6 +245,7 @@ def search_clean_ppi(st:Structure,chain_poi:str,chain_lig:str,chain_e3:str,seq_a
     return ppi,[seq_auto2can_poi[poi_res.id[1]] for poi_res in pocket_poi],[seq_auto2can_e3[e3_res.id[1]] for e3_res in pocket_e3]
 
 def get_pocket_info_from_pdb_info(pdbid:str,ligid:str,chain_poi:str,chain_lig:str,workdir:str='data/PDB',radius:float=0,canon_atomname:bool=False):
+    '''Get pocket residues from cif structure. Will remove unwanted hetatm and chains.'''
     logging.info(f'Processing {pdbid}')
     pdbid=pdbid.lower()
     seq_canon,seq_auth2can,*_ =clean_structure(pdbid,ligid,chain_poi,chain_lig,workdir,canon_atomname=canon_atomname)
@@ -258,6 +255,7 @@ def get_pocket_info_from_pdb_info(pdbid:str,ligid:str,chain_poi:str,chain_lig:st
     return seq_canon,pocket_boltz_resids
 
 def get_ppi_info_from_pdb_info(pdbid:str,ligid:str,chain_poi:str,chain_lig:str,chain_e3:str,workdir:str='data/PDB'):
+    '''Get ppi residues from cif structure. Will remove unwanted hetatm and chains.'''
     logging.info(f'Processing {pdbid}')
     st_parser=MMCIFParser(auth_chains=True,auth_residues=True,QUIET=True)
     pdbid=pdbid.lower()
@@ -265,18 +263,3 @@ def get_ppi_info_from_pdb_info(pdbid:str,ligid:str,chain_poi:str,chain_lig:str,c
     st=st_parser.get_structure(pdbid,os.path.join(workdir,'clean',f'{pdbid}_ref.cif'))
     ppi,pocket_poi,pocket_e3=search_clean_ppi(st,'P','L','E',seq_auth2can_poi,seq_auth2can_e3)
     return seq_poi,seq_e3,seq_auth2can_poi,seq_auth2can_e3,smi,ppi,pocket_poi,pocket_e3,atomname_ccd2boltz
-
-def reindex_boltz_cif(cif_file:str,raw_cif_file:str,map_record:pd.DataFrame):
-    '''Just re-calculate the residue '''
-    pdbid,ligid,chain_poi,chain_lig,chain_e3,seq_auth2can_poi,seq_auth2can_e3=map_record[map_record['raw_cif_file']==raw_cif_file].iloc[0][['pdbid','ligid',...]]
-    seq_can2auth_poi={v:k for k,v in seq_auth2can_poi.items()}
-    seq_can2auth_e3={v:k for k,v in seq_auth2can_e3.items()}
-    cmd.reinitialize()
-    cmd.load(cif_file,'pred')
-    cmd.alter('chain P or chain E','resi=int(resi)+100000') # avoid possible same resi
-    for resi_can,resi_auth in seq_can2auth_poi.items():
-        cmd.alter(f'chain P and resi {resi_can+100000}',f'resi={resi_auth}')
-    for resi_can,resi_auth in seq_can2auth_e3.items():
-        cmd.alter(f'chain E and resi {resi_can+100000}',f'resi={resi_auth}')
-    cmd.save(cif_file[:-4]+'_reindex.cif')
-

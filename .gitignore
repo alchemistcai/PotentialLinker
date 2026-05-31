@@ -3,6 +3,7 @@ reinvent_prior/
 *.chkpt
 benchmark/
 test.ipynb
+[0-9]*.png
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

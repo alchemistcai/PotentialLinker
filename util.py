@@ -1,4 +1,5 @@
 from ast import literal_eval
+import warnings
 from pymol import cmd
 from collections import UserDict
 from datetime import datetime, timedelta
@@ -16,6 +17,7 @@ from rdkit.Chem import MolFromSmiles,MolToInchiKey
 from DockQ.DockQ import load_PDB, run_on_all_native_interfaces
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from Bio.Align import PairwiseAligner
+warnings.filterwarnings(category=UserWarning,action='ignore')
 
 EVD_GOLD=4
 EVD_SILVER=3
@@ -39,6 +41,7 @@ def get_a3m(seq:str,file_prefix:str) -> None:
     '''Get MSAs of `seq` from the server and save them into `file_prefix`.'''
     tmp_filepath=f'{file_prefix}_tmp.a3m'
     if not os.path.exists(f'{file_prefix}.a3m'):
+        print(1)
         run_mmseqs2(seq,prefix=file_prefix)
         msa_path=f'{file_prefix}.a3m'
         shutil.move(f'{file_prefix}_env/bfd.mgnify30.metaeuk30.smag30.a3m',tmp_filepath)
@@ -87,6 +90,7 @@ class Idx2MaxScore(UserDict):
 
 
 def idxmap_boltz2uniprot(seq_boltz:str,seq_uni:str) -> dict[int,int]:
+    '''Return a sequence alignment map between seq_boltz and seq_uni, both of which starts from 1.'''
     aligner = PairwiseAligner('blastp')
     alignments = aligner.align(seq_uni, seq_boltz)
     result = {}
@@ -102,6 +106,7 @@ def idxmap_boltz2uniprot(seq_boltz:str,seq_uni:str) -> dict[int,int]:
     return result   
 
 def idxmaps(seqs_boltz_and_uniprot_pair:Iterable[tuple[str,str]]):
+    '''Align seq_boltz and seq_uniprot pairs and return a dataframe['seq_boltz','seq_uniprot','idxmap'].'''
     stored_file=Path(__file__).parent/'data/ub_site/idx_boltz2uniprot.csv'
     if os.path.exists(stored_file):
         df=pd.read_csv(stored_file,header='infer')
@@ -116,13 +121,19 @@ def idxmaps(seqs_boltz_and_uniprot_pair:Iterable[tuple[str,str]]):
         try:
             df.loc[len(df)]=[seq_boltz,seq_uni,idxmap_boltz2uniprot(seq_boltz,seq_uni)]
         except Exception as e:
-            logging.warning(f'Sequence alignment between {seq_boltz[:5]} and {seq_uni[:5]} faild because: {e}')
+            logging.warning(f'Sequence alignment between `{seq_boltz[:5]}...` and `{seq_uni[:5]}...` failed because: {e}')
             continue
     df.drop_duplicates(['seq_boltz','seq_uniprot'])
     df.copy().astype({'idxmap':str}).to_csv(stored_file,index=False)
     return df
    
-def fetch_uniprot_uid2seq(uniprot_ids:list[str]):
+def update_uniprot_uid2seq(uniprot_ids:list[str]):
+    '''Update {uniprot id: seq} map into `data/ub_site/id2seq.csv`.
+
+    Return a dataframe['UniprotID','seq'].
+    
+    `uniprot_ids` don't need to be in the csv file.
+    '''
     stored_file=Path(__file__).parent/'data/ub_site/id2seq.csv'
     if os.path.exists(stored_file):
         df=pd.read_csv(stored_file,header='infer')
@@ -130,7 +141,7 @@ def fetch_uniprot_uid2seq(uniprot_ids:list[str]):
         df=pd.DataFrame(columns=['UniprotID','seq'])
         df.astype({'UniprotID':str,'seq':str})
     for uniprot_id in uniprot_ids:
-        if df['UniprotID'].isin([uniprot_id]).any():
+        if uniprot_id not in set(df['UniprotID']):
             try:
                 with urllib.request.urlopen(f"https://rest.uniprot.org/uniprotkb/{uniprot_id}.json?fields=sequence") as response:
                     data_json = response.read().decode('utf-8')
@@ -139,7 +150,7 @@ def fetch_uniprot_uid2seq(uniprot_ids:list[str]):
             except:
                 uniprot_seq=''
             df.loc[len(df)]=[uniprot_id,uniprot_seq]
-    df.to_csv(stored_file,index=False)
+    df.drop_duplicates('UniprotID').to_csv(stored_file,index=False)
     return df
 
 def fetch_uniprot_ptm_info(uniprot_id:str) -> dict[int,int]:
@@ -193,7 +204,8 @@ def fetch_uniprot_ptm_info(uniprot_id:str) -> dict[int,int]:
     logging.debug(uni_idx2score.data)
     return uni_idx2score.data
 
-def update_uniprot_ptm_info(uniprot_id):
+def update_uniprot_ptm_info(uniprot_id:str):
+    '''Update and return dataframe['UniprotID', 'uniprotlys_resid', 'evidence_score'] for one uid.'''
     logging.info(f'Fetching PTM info of {uniprot_id}')
     data_path = Path(__file__).parent / 'data/ub_site'
     os.makedirs(data_path, exist_ok=True)
@@ -225,7 +237,10 @@ def update_uniprot_ptm_info(uniprot_id):
     df_uni_info.to_csv(data_path/new_uniprot_filename, index=False)
     return df_uni_info
 
-def update_all_uniprot_ub_info(uniprot_ids: list[str], max_workers: int = 10):
+def update_all_uniprot_ptm_info(uniprot_ids: list[str], max_workers: int = 10):
+    '''Update multiple uniprot entries and return a full dataframe['UniprotID', 'uniprotlys_resid', 'evidence_score'] including local cached entries.
+    
+    Don't set `max_workers` big than 100.'''
     results = []
     min_interval = 0.01
     last_request = 0
@@ -256,7 +271,10 @@ def update_all_uniprot_ub_info(uniprot_ids: list[str], max_workers: int = 10):
     dfs.to_csv('data/ub_site/uniprot_evidences.csv',index=False)
     return dfs
     
-def cif_boltz2uniprot(cif_file,seq_poi_boltz,seq_poi_uniprot):
+def cif_boltz2uniprot(cif_file:str,seq_poi_boltz:str,seq_poi_uniprot:str):
+    '''Reindex resid for boltz prediction structures to be according with uniprot.
+    
+    Conversion rate is about 27aa/s.'''
     cif_file_path=Path(os.path.abspath(cif_file))
     cif_file_uniprot_path=cif_file_path.parent/(cif_file_path.stem+'_uni.cif')
     df_idxmap=idxmaps([(seq_poi_boltz,seq_poi_uniprot)])
@@ -270,3 +288,80 @@ def cif_boltz2uniprot(cif_file,seq_poi_boltz,seq_poi_uniprot):
         # add 5000 if the lys is not in the idxmap, mainly because of artificial gene edition or mutation
         cmd.alter(f'chain P and resi {idx_boltz+5000}',f'resi={idx_uniprot}')
         cmd.save(cif_file_uniprot_path)
+
+def generate_pymol_pse(cif_file:str,lys_site:int,ref_cif_poi:str='',ref_cif_align_selection:str='',ref_cif_e3:str='',ref_cif_ternary:str='',covalent_resid:int=0,covalent_res_atomname='SG',covalent_lig_atomname: str='C104',):
+    '''Create a pymol project session file, including the predicted machinery+poi structure, Ub/lys distance, clash atoms, reference structures and covalent bond.
+    
+    Press `F1` to see panorama view and `F2` to see closeup view.'''
+    try:
+        # panorama view
+        cmd.reinitialize()
+        cmd.set('label_size',30)
+        cmd.set('label_font_id',7)
+        cmd.load(cif_file,'panorama')
+        cmd.space('rgb')
+        cmd.bg_color('white')
+        cmd.color('yelloworange')
+        cmd.color('pink','chain E')
+        cmd.color('slate','chain P')
+        cmd.color('cyan','chain D') # E2
+        cmd.color('green','chain U')
+        cmd.color('magenta','chain L')
+        cmd.util.cnc('chain L')
+        cmd.scene('F1','store','panorama view')
+        cmd.disable('panorama')
+
+        # close view
+        cmd.copy_to('close','panorama')
+        cmd.group('close_group','close','add')
+        ## reference structures
+        if ref_cif_poi:
+            cmd.load(ref_cif_poi,'ref_poi')
+            ref_cif_align_selection='ref_poi'+(f' and {ref_cif_align_selection}' if ref_cif_align_selection else "")
+            cmd.super(ref_cif_align_selection,'panorama and chain P')
+            cmd.group('close_group','ref_poi','add')
+        if ref_cif_poi:
+            cmd.load(ref_cif_e3,'ref_e3')
+            cmd.super('ref_e3','panorama and chain E')
+            cmd.group('close_group','ref_e3','add')
+        if ref_cif_ternary:
+            cmd.load(ref_cif_ternary,'ref_ternary')
+            cmd.super('ref_ternary','panorama and chain E+P')
+            cmd.group('close_group','ref_ternary','add')
+        cmd.color('white','ref_*')
+        cmd.set('stick_transparency',0.2,'ref_*')
+        cmd.remove('ref_* and polymer')
+        cmd.set('cartoon_transparency',0.6,'close')
+        ## covalent bond
+        if covalent_resid:
+            sele_covalent_res=f'close and chain P and resi {covalent_resid}'
+            cmd.show('sticks',sele_covalent_res)
+            cmd.bond(f'{sele_covalent_res} and name {covalent_res_atomname}',f'close and chain L and name {covalent_lig_atomname}')
+            cmd.copy_to('cov_poi',sele_covalent_res)
+            cmd.group('close_group','cov_poi','add')
+            cmd.label(f'cov_poi and name {covalent_res_atomname}','oneletter+resi')
+        ## Ub/Lys distance
+        sele_lys_poi=f'close and chain P and resi {lys_site}'
+        sele_gly_ub='close and chain U and resi 75'
+        cmd.show('sticks',sele_lys_poi)
+        cmd.show('sticks',sele_gly_ub)
+        cmd.distance('dist_ublys',f'{sele_lys_poi} and name NZ',f'{sele_gly_ub} and name C')
+        cmd.group('close_group','dist_ublys','add')
+        cmd.copy_to('lys_poi', sele_lys_poi)
+        cmd.label('lys_poi and name NZ', 'oneletter+resi')
+        cmd.group('close_group','lys_poi','add')
+        ## clash atoms
+        sele_clash='close and (chain P near_to 1 of (not chain P+E+L))'
+        cmd.copy_to('clash', sele_clash)
+        cmd.group('close_group','clash','add')
+        cmd.show('sphere','clash')
+        cmd.set('sphere_color','red')
+        cmd.set('sphere_scale',0.2)
+        cmd.hide('cartoon','clash')
+        cmd.enable('not panorama')
+        cmd.zoom('close and chain E+L+P+U')
+        cmd.util.cnc()
+        cmd.scene('F2','store','close view')
+        cmd.save(Path(cif_file).parent/(Path(cif_file).stem+'.pse'))
+    except Exception as e:
+        logging.error(e)

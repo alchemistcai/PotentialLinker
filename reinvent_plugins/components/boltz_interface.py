@@ -3,6 +3,7 @@ import json
 import logging
 import os
 from pathlib import Path
+import random
 from pymol import cmd
 from Bio.PDB import  PDBParser, NeighborSearch
 from rdkit.Chem import MolFromSmiles,AddHs,MolFromSmarts,AssignStereochemistry,AllChem
@@ -302,14 +303,14 @@ def run_superpose_scoring_items_calc(yaml_path: str,generate_bestcif:bool=True,b
                         # then this receptor atom is clashing with at least one atom for the model
                         clash += 1
                 scoring_items_list.append(
-                    [ref_file, dist, clash,lys_resid])
+                    [ref_file, dist, clash,int(lys_resid)])
                 if calc_bsa:
                     scoring_items_list[-1].insert(2,int(bool(lys_poi_surf_resis_after_docking)))
                     scoring_items_list[-1].insert(3,bsa_after_superposing)
                 if dist<min_dist:
                     min_dist=dist
                     num_clash=clash
-                    closest_lys_resid=lys_resid
+                    closest_lys_resid=int(lys_resid)
                     if generate_bestcif:
                         cmd.save(ypath.parent/f'{ypath.stem}_best.cif','ref')
             except Exception as e:
@@ -379,7 +380,7 @@ def calculate_affinity_score(
         lgKd_e3=run_boltz_lgKd_prediction(yaml_e3,extract_from_precomputed)
     else:
         lgKd_poi=lgKd_e3=0
-    one_line_record=(name_poi,name_e3,inchikey,lgKd_poi,lgKd_e3,lgKd_ternary)
+    one_line_record=[name_poi,name_e3,inchikey,lgKd_poi,lgKd_e3,lgKd_ternary]
     scoring_items=run_superpose_scoring_items_calc(yaml_ternary)
     return [one_line_record+scs for scs in scoring_items]
 

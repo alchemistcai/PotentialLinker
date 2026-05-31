@@ -69,3 +69,6 @@ params.covalent_res_atomname='SG'
 params.e3_name='crbn'
 params.calculate_path='data/fgfr4'
 params.generate_bestcif=true
+params.w_lgkd=1
+params.w_d2=1
+params.w_clash=1

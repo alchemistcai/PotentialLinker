@@ -1,6 +1,6 @@
 # PotentialLinker, a PROTAC linker generator in a linearly additive energy space
 
-![](fgfr4_d11.png)
+![](fgfr4_d11_C552_K607_11.2.png)
 
 ## Prepare envs
 
@@ -12,25 +12,30 @@ REINVENT4 and boltz supports CPU devices. However, it will be too slow for boltz
 ```bash
 mamba create -n boltz python=3.11
 mamba activate boltz
+
+# install reinvent4
 git clone https://github.com/MolecularAI/REINVENT4.git --depth 1
 cd REINVENT4
 python install.py cu126
+
+# install boltz
 cd ..
-git clone xxxx boltz
+git clone https://github.com/alchemistcai/boltz2_for_protac.git boltz
 cd boltz
 pip install -e .[cuda]
 export BOLTZ_CACHE = /root/autodl-tmp/boltz # change to your boltz cache dir, can be defined in .bashrc
 # The first time you predict using boltz, it will download automatically. Or you can download mols and checkpoints by yourself
+
+# install potential_linker
 cd ..
-git clone xxx
+git clone https://github.com/alchemistcai/PotentialLinker.git potential_linker
 cd potential_linker
-pip install xxx
+pip install gemmi==0.7.5 dockq # gemmi can't parse pymol saved cif file in version 0.6.5
+mamba install pymol-open-source ipykernel biopython numpy=1.26.4 scikit-learn=1.6.1
+
 # if you want to use precomputed results directly
 wget zenodoxxxxre
 tar xxxx
-
-pip install gemmi==0.7.5 dockq # gemmi can't parse pymol saved cif file in version 0.6.5
-mamba install pymol-open-source ipykernel biopython numpy=1.26.4 scikit-learn=1.6.1
 ```
 
 If you want to precomputed results from raw database, execute the `ipynb` notebook and generating the results(about 30h).
@@ -59,36 +64,39 @@ isim = [
 - Modify `boltz_fgfr4_vhl|crbn.toml` and adjust parameters in `[[stage.scoring.component.BoltzScore.endpoint]]`.
   - Log name, checkpoint names and other related parameters should be altered too.
   - `covalent_xxx` parameters are only required for covalent PROTACs (See fgfr4 examples).
-  - `params.lig_warhead_smarts` is the covalent warhead part after reaction. `[C:1]-C-C=O` is the added warhead and [X:1] is used to mark the covalent connection point.
+  - `params.lig_warhead_smarts` is the covalent warhead part after reaction. `[C:1]-C-C=O` is the added warhead and [C:1] is used to mark the covalent connection point.
+  - Weight of NWHM scores are 1:1:1 by default (optional). Set to 1:0:0 means calculating lg_kd only.
 
-## Sampling PROTACs
+## Sampling PROTACs and clustering
 
-- asdfs
-- In Reinvent, sampling does not calculate scoring. You need to calculate them by yourself.
-- Use xxxx
+See [FGFR4.ipynb](FGFR4.ipynb) for examples.
 
 ## Our Boltz Modification
 
 - Enable predicting affinity for ligands with more than 56 atoms.
 - Atom name method is not changed because it effects affinity scores calculation. "CL1xx","BR1xx" with more than 4 characters are treated as bad atoms right now.
-- Alter `pyproject.toml` to install gemmi 0.7.5. Fix `parse/mmcif.py` so that it can read pymol cif.
+- Alter `pyproject.toml` to install gemmi 0.7.5. Fix `parse/mmcif.py` so that it can read pymol adjusted cif.
 - You can clone Boltz official repo and alter it by yourself to keep update with it.
 
 ## Note
 
 Residue idx of Boltz starts from 1, while alignment of biopython starts from 0.
 
-Protein sequences in PDB may have extra artifical residues (expression tags and so on). Be careful if the tags have LYS and were predicted as the PTM sites. See the sequence annotations in PDB if there is a warning.
+Protein sequences in PDB may have extra artificial residues (expression tags and so on). Be careful if the tags have LYS and were predicted as the PTM sites. See the sequence annotations in PDB if there is a warning.
 
 ## Acknowledge
 
 Thanks for these cool works:
 
-- boltz2: restrained 3D complex structure and affinity prediction
+- boltz2: constrained 3D complex structure and affinity prediction
 - reinvent4: customized reinforcement learning for molecule linker generation
 - PROTACpedia: PDB structure and PROTAC exam information
-- qPTM: Ub-PTM site compiled from proteomics source
-- P4ward: CRBN/VHL-E2-Ub complex modeling
+- uniprot and PTMeXchange: Ub-PTM site info from document and proteomics source
+- P4ward: CRBN/VHL-E2-Ub complex modeling, clash atom calculation
+
+## License
+
+Our model and code are released under MIT License.
 
 ## Cite Us
 
