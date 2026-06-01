@@ -1,0 +1,14 @@
+smi,protein_name,pdbid,ligid,chain_poi,chain_lig,chain_e3,chain_poi_can,chain_e3_can,seq_poi,pocket_poi,E3 Ligase,seq_e3,pocket_e3,ppi,UniprotID
+Cc1c(sc-2c1C(=N[C@H](c3n2c(nn3)C)CC(=O)NCCOCCOCCOCC(=O)N[C@H](C(=O)N4C[C@@H](C[C@H]4C(=O)NCc5ccc(cc5)c6c(ncs6)C)O)C(C)(C)C)c7ccc(cc7)Cl)C,BRD4,5T35,759,A,D,D,A,D,,,vhl,,,,O60885
+Cc1c2c(sc1C(=O)NCCCCCCCCNC(=O)COc3cccc4c3C(=O)N(C4=O)[C@H]5CCC(=O)NC5=O)-n6c(nnc6[C@@H](N=C2c7ccc(cc7)Cl)CC(=O)OC)C,BRD4,6BN7,RN3,C,B,B,C,B,,,crbn,,,,O60885
+Cc1c(sc-2c1C(=N[C@H](c3n2c(nn3)C)CC(=O)NCCCCCCCCNC(=O)COc4cccc5c4C(=O)N(C5=O)[C@H]6CCC(=O)NC6=O)c7ccc(cc7)Cl)C,BRD4,6BOY,RN6,C,B,B,C,B,,,crbn,,,,O60885
+Cc1c(scn1)c2ccc(c(c2)OCCOCCOCCN3CCN(CC3)c4cc(nnc4N)c5ccccc5O)CNC(=O)[C@@H]6C[C@H](CN6C(=O)[C@H](C(C)(C)C)NC(=O)C7(CC7)F)O,SMARCA2,6HAY,FX8,A,B,B,A,B,,,vhl,,,,P51531
+Cc1c(scn1)c2ccc(c(c2)OCCc3ccc(cc3)CN4CCN(CC4)c5cc(nnc5N)c6ccccc6O)CNC(=O)[C@@H]7C[C@H](CN7C(=O)[C@H](C(C)(C)C)NC(=O)C8(CC8)F)O,SMARCA4,6HR2,FWZ,A,B,B,A,B,,,vhl,,,,P51532
+C[C@@H](C(=O)N[C@H](C(=O)N1Cc2cc(ccc2C[C@H]1C(=O)N[C@@H]3CCCc4c3cccc4)OCc5cnc(cn5)COC(=O)N6CCC[C@H](C6)n7c(c(c(n7)c8ccc(cc8)Oc9ccc(cc9F)F)C(=O)N)N)C(C)(C)C)NC,BTK,6W7O,TL7,A,A,C,A,C,,,ciap,,,,Q06187
+Cc1c(scn1)c2ccc(cc2)CNC(=O)[C@@H]3C[C@H](CN3C(=O)[C@H](C(C)(C)C)NC(=O)CCOCCOCCOCCOCCOCCOCC#Cc4ccc(cc4)OCCCc5c(nc(s5)N6CCc7cccc(c7C6)C(=O)Nc8nc9ccccc9s8)C(=O)O)O,BCLX,6ZHC,QL8,DDD,AAA,AAA,D,A,,,vhl,,,,Q07817
+Cc1c(scn1)c2ccc(cc2)CNC(=O)[C@@H]3C[C@H](CN3C(=O)[C@H](C(C)(C)C)NC(=O)CCCCCCCCCC(=O)NCCN4CCN(CC4)Cc5cccc(c5)c6ccc(c(c6)NC(=O)C7=C(CC(=O)N=C7)C(F)(F)F)N8CCN(CC8)C)O,WDR5,7JTO,VKA,B,B,L,A,D,,,vhl,,,,P61964
+Cc1c(scn1)c2ccc(cc2)[C@H](C)NC(=O)[C@@H]3C[C@H](CN3C(=O)[C@H](C(C)(C)C)NC(=O)CNC(=O)c4ccc(c(c4)c5ccc(c(c5)NC(=O)C6=CNC(=O)C=C6C(F)(F)F)N7C[C@H](N([C@H](C7)C)C)C)F)O,WDR5,7JTP,X6M,A,A,L,D,C,,,vhl,,,,P61964
+Cc1c(scn1)c2ccc(cc2)CNC(=O)[C@@H]3C[C@H](CN3C(=O)[C@H](C(C)(C)C)NC(=O)CCCCCCCCCCNC(=O)c4cc5c(cc4CS(=O)(=O)C)C6=CN(C(=O)c7c6c(c[nH]7)CN5c8c(cc(cn8)F)F)C)O,BRD4,7KHH,WEP,D,C,C,D,C,,,vhl,,,,O60885
+Cc1c(scn1)c2ccc(cc2)CNC(=O)[C@@H]3C[C@H](CN3C(=O)[C@H](C(C)(C)C)NC(=O)CCCCNC(=O)c4ccc(cc4)c5ccc(c(c5)NC(=O)C6=CNC(=O)C=C6C(F)(F)F)N7CCN(CC7)C)O,WDR5,7Q2J,8KH,D,D,C,D,C,,,vhl,,,,P61964
+C[C@@H](C(=O)N[C@H](C(=O)N1Cc2cc(ccc2C[C@H]1C(=O)N[C@@H]3CCCc4c3cccc4)OCCOCCOCCOCCOCCOC(=O)N5CCC[C@H](C5)n6c(c(c(n6)c7ccc(cc7)Oc8ccc(cc8F)F)C(=O)N)N)C(C)(C)C)NC,BTK,6W8I,TKY,A,D,D,A,D,,,ciap,,,,Q06187
+Cc1c(scn1)c2ccc(c(c2)OCCc3ccc(cc3)CN4CCN(CC4)c5cc(nnc5N)c6ccccc6O)CNC(=O)[C@@H]7C[C@H](CN7C(=O)[C@H](C(C)(C)C)NC(=O)C8(CC8)F)O,SMARCA2,6HAX,FWZ,A,B,B,A,B,,,vhl,,,,P51531

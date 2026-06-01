@@ -1,0 +1,785 @@
+PROTACDB ID,E3 Ligase,Active/Inactive,protein_name,UniprotID,lys_site_uniprot,evidence_score
+928,crbn,1,EGFR T790M,P00533,970,4
+408,crbn,1,BTK kinase domain,Q06187,515,0
+226,crbn,1,ABL,P00519,274,2
+638,crbn,1,Signal transducer and activator of transcription 3,P40763,685,3
+1186,crbn,0,Programmed cell death 1 ligand 1,Q9NZQ7,25,0
+230,crbn,1,BRD9,Q9H8M2,327,0
+811,crbn,0,Histone Deacetylase,Q92769,166,0
+160,crbn,1,BTK kinase domain,Q06187,515,0
+420,crbn,1,Cyclin-dependent kinase 6,Q00534,279,4
+1188,crbn,0,Programmed cell death 1 ligand 1,Q9NZQ7,41,0
+742,crbn,1,BTK kinase domain,Q06187,515,0
+587,crbn,0,BTK kinase domain,Q06187,515,0
+1142,crbn,1,ABL,P00519,274,2
+630,crbn,1,Signal transducer and activator of transcription 3,P40763,685,3
+988,crbn,1,Protein-tyrosine kinase 2-beta,Q14289,535,0
+1089,crbn,1,HMG-CoA reductase,P04035,501,0
+743,crbn,1,BTK kinase domain,Q06187,515,0
+409,crbn,0,BTK kinase domain,Q06187,382,0
+812,crbn,1,Histone Deacetylase,Q92769,145,0
+641,crbn,1,Signal transducer and activator of transcription 3,P40763,517,0
+1094,crbn,1,HMG-CoA reductase,P04035,501,0
+417,crbn,1,Cyclin-dependent kinase 6,Q00534,279,4
+1101,crbn,1,HMG-CoA reductase,P04035,501,0
+637,crbn,1,Signal transducer and activator of transcription 3,P40763,685,3
+397,crbn,1,BTK kinase domain,Q06187,515,0
+1081,crbn,0,HMG-CoA reductase,P04035,501,0
+156,crbn,0,Receptor-type tyrosine-protein kinase FLT3,P36888,663,0
+739,crbn,1,BTK kinase domain,Q06187,515,0
+744,crbn,0,BTK kinase domain,Q06187,515,0
+197,crbn,1,BTK kinase domain,Q06187,515,0
+407,crbn,1,BTK kinase domain,Q06187,515,0
+1204,crbn,0,Programmed cell death 1 ligand 1,Q9NZQ7,41,0
+1208,crbn,1,Programmed cell death 1 ligand 1,Q9NZQ7,25,0
+220,crbn,1,ABL,P00519,274,2
+403,crbn,1,BTK kinase domain,Q06187,515,0
+389,crbn,0,BTK kinase domain,Q06187,466,0
+1092,crbn,1,HMG-CoA reductase,P04035,501,0
+1210,crbn,0,Programmed cell death 1 ligand 1,Q9NZQ7,46,0
+989,crbn,1,Protein-tyrosine kinase 2-beta,Q14289,488,0
+1139,crbn,1,ABL,P00519,247,0
+648,crbn,0,Signal transducer and activator of transcription 3,P40763,685,3
+632,crbn,1,Signal transducer and activator of transcription 3,P40763,685,3
+1084,crbn,0,HMG-CoA reductase,P04035,691,2
+222,crbn,1,ABL,P00519,274,2
+1197,crbn,0,Programmed cell death 1 ligand 1,Q9NZQ7,41,0
+984,crbn,1,Protein-tyrosine kinase 2-beta,Q14289,535,0
+639,crbn,1,Signal transducer and activator of transcription 3,P40763,685,3
+1187,crbn,0,Programmed cell death 1 ligand 1,Q9NZQ7,25,0
+228,crbn,1,ABL,P00519,415,2
+855,crbn,1,Casein kinase II subunit alpha,P68400,260,4
+427,crbn,1,Cyclin-dependent kinase 6,Q00534,279,4
+240,crbn,0,BRD9,Q9H8M2,155,0
+629,crbn,1,Signal transducer and activator of transcription 3,P40763,685,3
+1141,crbn,1,ABL,P00519,274,2
+1105,crbn,0,HMG-CoA reductase,P04035,501,0
+1096,crbn,1,HMG-CoA reductase,P04035,885,4
+635,crbn,1,Signal transducer and activator of transcription 3,P40763,685,3
+412,crbn,1,BTK kinase domain,Q06187,595,0
+438,crbn,0,Cyclin-dependent kinase 6,Q00534,279,4
+150,crbn,0,Receptor-type tyrosine-protein kinase FLT3,P36888,663,0
+992,crbn,0,Protein-tyrosine kinase 2-beta,Q14289,535,0
+376,crbn,1,BTK kinase domain,Q06187,515,0
+1080,crbn,1,HMG-CoA reductase,P04035,885,4
+643,crbn,1,Signal transducer and activator of transcription 3,P40763,685,3
+1203,crbn,0,Programmed cell death 1 ligand 1,Q9NZQ7,41,0
+1196,crbn,0,Programmed cell death 1 ligand 1,Q9NZQ7,41,0
+231,crbn,1,BRD9,Q9H8M2,327,0
+741,crbn,1,BTK kinase domain,Q06187,466,0
+927,crbn,1,EGFR T790M,P00533,757,4
+711,crbn,0,GTPase KRas,P01116,117,4
+406,crbn,1,BTK kinase domain,Q06187,515,0
+328,crbn,1,ALK tyrosine kinase receptor,Q9UM73,1109,3
+1087,crbn,1,HMG-CoA reductase,P04035,501,0
+227,crbn,1,ABL,P00519,247,0
+760,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,99,4
+996,crbn,0,EGFR T790M,P00533,713,0
+219,crbn,1,ABL,P00519,274,2
+1079,crbn,0,HMG-CoA reductase,P04035,501,0
+897,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,99,4
+1091,crbn,0,HMG-CoA reductase,P04035,501,0
+987,crbn,1,Protein-tyrosine kinase 2-beta,Q14289,687,0
+1110,crbn,0,HMG-CoA reductase,P04035,501,0
+453,crbn,0,BTK kinase domain,Q06187,573,0
+1077,crbn,1,HMG-CoA reductase,P04035,619,4
+1206,crbn,0,Programmed cell death 1 ligand 1,Q9NZQ7,41,0
+158,crbn,1,Receptor-type tyrosine-protein kinase FLT3,P36888,602,0
+706,crbn,0,GTPase KRas,P01116,147,4
+759,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,99,4
+151,crbn,0,Receptor-type tyrosine-protein kinase FLT3,P36888,663,0
+1090,crbn,1,HMG-CoA reductase,P04035,691,2
+1185,crbn,1,"Retinal rod rhodopsin-sensitive cGMP 3',5'-cyclic phosphodiesterase subunit delta",O43924,51,0
+396,crbn,1,BTK kinase domain,Q06187,515,0
+327,crbn,1,ALK tyrosine kinase receptor,Q9UM73,1101,0
+698,crbn,0,GTPase KRas,P01116,5,0
+204,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,99,4
+983,crbn,1,Protein-tyrosine kinase 2-beta,Q14289,479,2
+213,crbn,0,ABL,P00519,467,0
+1115,crbn,1,HMG-CoA reductase,P04035,692,4
+1114,crbn,1,HMG-CoA reductase,P04035,501,0
+393,crbn,1,BTK kinase domain,Q06187,515,0
+588,crbn,1,BTK kinase domain,Q06187,515,0
+636,crbn,1,Signal transducer and activator of transcription 3,P40763,685,3
+1088,crbn,1,HMG-CoA reductase,P04035,691,2
+1113,crbn,1,HMG-CoA reductase,P04035,501,0
+1106,crbn,0,HMG-CoA reductase,P04035,502,4
+1146,crbn,1,ABL,P00519,285,4
+424,crbn,1,Cyclin-dependent kinase 6,Q00534,279,4
+337,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,99,4
+1107,crbn,1,HMG-CoA reductase,P04035,501,0
+704,crbn,0,GTPase KRas,P01116,147,4
+647,crbn,1,Signal transducer and activator of transcription 3,P40763,685,3
+963,crbn,1,Cyclin-dependent kinase 6,Q00534,274,4
+336,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,99,4
+233,crbn,1,BRD9,Q9H8M2,206,0
+757,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,99,4
+1209,crbn,0,Programmed cell death 1 ligand 1,Q9NZQ7,25,0
+581,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,99,4
+970,crbn,1,Protein-tyrosine kinase 2-beta,Q14289,479,2
+1192,crbn,0,Programmed cell death 1 ligand 1,Q9NZQ7,41,0
+895,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,99,4
+973,crbn,0,Protein-tyrosine kinase 2-beta,Q14289,479,2
+1140,crbn,1,ABL,P00519,274,2
+631,crbn,1,Signal transducer and activator of transcription 3,P40763,685,3
+700,crbn,0,GTPase KRas,P01116,147,4
+425,crbn,1,Cyclin-dependent kinase 6,Q00534,34,2
+896,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,99,4
+1135,crbn,0,ABL,P00519,467,0
+1093,crbn,1,HMG-CoA reductase,P04035,501,0
+748,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,99,4
+1148,crbn,1,ABL,P00519,271,0
+703,crbn,0,GTPase KRas,P01116,5,0
+1082,crbn,0,HMG-CoA reductase,P04035,501,0
+288,crbn,1,"Retinal rod rhodopsin-sensitive cGMP 3',5'-cyclic phosphodiesterase subunit delta",O43924,51,0
+1194,crbn,1,Programmed cell death 1 ligand 1,Q9NZQ7,129,0
+977,crbn,1,Protein-tyrosine kinase 2-beta,Q14289,468,0
+392,crbn,1,BTK kinase domain,Q06187,400,0
+335,crbn,0,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,99,4
+154,crbn,0,Receptor-type tyrosine-protein kinase FLT3,P36888,602,0
+1205,crbn,0,Programmed cell death 1 ligand 1,Q9NZQ7,41,0
+1099,crbn,0,HMG-CoA reductase,P04035,501,0
+582,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,99,4
+211,crbn,0,ABL,P00519,467,0
+454,crbn,1,BTK kinase domain,Q06187,382,0
+646,crbn,1,Signal transducer and activator of transcription 3,P40763,685,3
+1200,crbn,0,Programmed cell death 1 ligand 1,Q9NZQ7,41,0
+1199,crbn,0,Programmed cell death 1 ligand 1,Q9NZQ7,41,0
+394,crbn,1,BTK kinase domain,Q06187,400,0
+198,crbn,1,BTK kinase domain,Q06187,637,0
+560,crbn,1,Cyclin-dependent kinase 6,Q00534,257,4
+1098,crbn,0,HMG-CoA reductase,P04035,501,0
+405,crbn,1,BTK kinase domain,Q06187,466,0
+1103,crbn,0,HMG-CoA reductase,P04035,502,4
+149,crbn,1,Wee1-like protein kinase,P30291,332,1
+1189,crbn,0,Programmed cell death 1 ligand 1,Q9NZQ7,41,0
+234,crbn,1,BRD9,Q9H8M2,227,0
+628,crbn,1,Signal transducer and activator of transcription 3,P40763,517,0
+1007,crbn,0,EGFR T790M,P00533,823,0
+1001,crbn,0,EGFR T790M,P00533,713,0
+1198,crbn,1,Programmed cell death 1 ligand 1,Q9NZQ7,41,0
+756,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,99,4
+1201,crbn,0,Programmed cell death 1 ligand 1,Q9NZQ7,41,0
+886,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,102,2
+746,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,99,4
+583,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,99,4
+985,crbn,1,Protein-tyrosine kinase 2-beta,Q14289,488,0
+244,crbn,1,BRD9,Q9H8M2,178,0
+106,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,99,4
+758,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,99,4
+1112,crbn,0,HMG-CoA reductase,P04035,501,0
+892,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,91,0
+1182,crbn,1,"Retinal rod rhodopsin-sensitive cGMP 3',5'-cyclic phosphodiesterase subunit delta",O43924,52,0
+325,crbn,1,Cyclin-dependent kinase 6,Q00534,279,4
+111,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,99,4
+642,crbn,1,Signal transducer and activator of transcription 3,P40763,685,3
+580,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,99,4
+730,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,99,4
+1213,crbn,0,Programmed cell death 1 ligand 1,Q9NZQ7,41,0
+1111,crbn,0,HMG-CoA reductase,P04035,501,0
+200,crbn,0,BTK kinase domain,Q06187,447,0
+894,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,99,4
+334,crbn,0,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,99,4
+888,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,99,4
+965,crbn,1,Cyclin-dependent kinase 6,Q00534,216,0
+640,crbn,1,Signal transducer and activator of transcription 3,P40763,451,0
+109,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,99,4
+1195,crbn,1,Programmed cell death 1 ligand 1,Q9NZQ7,25,0
+419,crbn,1,Cyclin-dependent kinase 6,Q00534,111,4
+645,crbn,1,Signal transducer and activator of transcription 3,P40763,517,0
+1145,crbn,1,ABL,P00519,285,4
+650,crbn,1,Signal transducer and activator of transcription 3,P40763,517,0
+1156,crbn,1,Mitogen-activated protein kinase 14,Q16539,15,4
+140,crbn,1,EGFR T790M,P00533,970,4
+321,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,99,4
+1030,crbn,0,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,112,0
+259,crbn,1,AKT,P31750,307,0
+753,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,99,4
+1104,crbn,0,HMG-CoA reductase,P04035,501,0
+401,crbn,1,BTK kinase domain,Q06187,515,0
+893,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,112,0
+1212,crbn,0,Programmed cell death 1 ligand 1,Q9NZQ7,41,0
+123,crbn,0,Tyrosine-protein kinase JAK2,O60674,903,4
+559,crbn,1,Cyclin-dependent kinase 6,Q00534,216,0
+1083,crbn,0,HMG-CoA reductase,P04035,501,0
+747,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,99,4
+1193,crbn,0,Programmed cell death 1 ligand 1,Q9NZQ7,41,0
+404,crbn,1,BTK kinase domain,Q06187,400,0
+107,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,99,4
+1190,crbn,0,Programmed cell death 1 ligand 1,Q9NZQ7,41,0
+442,crbn,1,Cyclin-dependent kinase 6,Q00534,3,4
+986,crbn,1,Protein-tyrosine kinase 2-beta,Q14289,488,0
+707,crbn,0,GTPase KRas,P01116,147,4
+1211,crbn,1,Programmed cell death 1 ligand 1,Q9NZQ7,41,0
+241,crbn,1,BRD9,Q9H8M2,224,0
+1191,crbn,0,Programmed cell death 1 ligand 1,Q9NZQ7,41,0
+1108,crbn,1,HMG-CoA reductase,P04035,886,0
+761,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,99,4
+155,crbn,0,Receptor-type tyrosine-protein kinase FLT3,P36888,602,0
+129,crbn,0,Tyrosine-protein kinase JAK2,O60674,903,4
+212,crbn,0,ABL,P00519,467,0
+891,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,99,4
+1172,crbn,1,Mitogen-activated protein kinase 14,Q16539,15,4
+974,crbn,1,Protein-tyrosine kinase 2-beta,Q14289,623,0
+1184,crbn,0,"Retinal rod rhodopsin-sensitive cGMP 3',5'-cyclic phosphodiesterase subunit delta",O43924,52,0
+957,crbn,1,Cyclin-dependent kinase 6,Q00534,26,4
+1202,crbn,0,Programmed cell death 1 ligand 1,Q9NZQ7,41,0
+229,crbn,1,ABL,P00519,274,2
+418,crbn,1,Cyclin-dependent kinase 6,Q00534,3,4
+1134,crbn,0,ABL,P00519,467,0
+745,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,99,4
+390,crbn,1,BTK kinase domain,Q06187,447,0
+1029,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,112,0
+962,crbn,1,Cyclin-dependent kinase 6,Q00534,279,4
+237,crbn,1,BRD9,Q9H8M2,227,0
+752,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,99,4
+887,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,99,4
+1149,crbn,1,ABL,P00519,467,0
+810,crbn,0,"Indoleamine 2,3-dioxygenase 1",P14902,44,0
+74,crbn,0,Interleukin-1 receptor-associated kinase 4,Q9NWZ3,448,0
+202,crbn,1,BTK kinase domain,Q06187,400,0
+135,crbn,0,Tyrosine-protein kinase JAK2,O60674,962,0
+976,crbn,1,Protein-tyrosine kinase 2-beta,Q14289,488,0
+1137,crbn,0,ABL,P00519,467,0
+126,crbn,0,Tyrosine-protein kinase JAK2,O60674,970,0
+319,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,99,4
+1027,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,91,0
+1078,crbn,0,HMG-CoA reductase,P04035,502,4
+898,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,91,0
+728,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,99,4
+238,crbn,1,BRD9,Q9H8M2,178,0
+388,crbn,0,BTK kinase domain,Q06187,466,0
+980,crbn,1,Protein-tyrosine kinase 2-beta,Q14289,623,0
+929,crbn,1,EGFR T790M,P00533,823,0
+201,crbn,0,BTK kinase domain,Q06187,400,0
+114,crbn,0,Tyrosine-protein kinase JAK2,O60674,903,4
+132,crbn,0,Tyrosine-protein kinase JAK2,O60674,903,4
+1136,crbn,0,ABL,P00519,467,0
+157,crbn,1,Receptor-type tyrosine-protein kinase FLT3,P36888,602,0
+142,crbn,1,EGFR T790M,P00533,754,4
+755,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,99,4
+993,crbn,1,EGFR T790M,P00533,737,4
+634,crbn,1,Signal transducer and activator of transcription 3,P40763,626,4
+1006,crbn,0,EGFR T790M,P00533,737,4
+972,crbn,1,Protein-tyrosine kinase 2-beta,Q14289,488,0
+705,crbn,0,GTPase KRas,P01116,147,4
+375,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,102,2
+740,crbn,1,BTK kinase domain,Q06187,400,0
+290,crbn,1,"Retinal rod rhodopsin-sensitive cGMP 3',5'-cyclic phosphodiesterase subunit delta",O43924,52,0
+762,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,102,2
+1138,crbn,0,ABL,P00519,467,0
+955,crbn,1,Cyclin-dependent kinase 6,Q00534,26,4
+1100,crbn,0,HMG-CoA reductase,P04035,480,4
+729,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,155,0
+808,crbn,0,"Indoleamine 2,3-dioxygenase 1",P14902,137,0
+1147,crbn,1,ABL,P00519,274,2
+318,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,155,0
+1086,crbn,1,HMG-CoA reductase,P04035,501,0
+727,crbn,0,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,99,4
+890,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,99,4
+712,crbn,0,GTPase KRas,P01116,147,4
+856,crbn,1,Casein kinase II subunit alpha,P68400,76,0
+731,crbn,0,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,155,0
+749,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,102,2
+421,crbn,1,Cyclin-dependent kinase 6,Q00534,26,4
+152,crbn,0,Receptor-type tyrosine-protein kinase FLT3,P36888,602,0
+289,crbn,1,"Retinal rod rhodopsin-sensitive cGMP 3',5'-cyclic phosphodiesterase subunit delta",O43924,52,0
+108,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,99,4
+584,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,155,0
+696,crbn,0,Androgen receptor,P10275,862,0
+1183,crbn,1,"Retinal rod rhodopsin-sensitive cGMP 3',5'-cyclic phosphodiesterase subunit delta",O43924,52,0
+1154,crbn,1,ABL,P00519,285,4
+1143,crbn,1,ABL,P00519,274,2
+697,crbn,0,Androgen receptor,P10275,913,3
+709,crbn,1,GTPase KRas,P01116,147,4
+1095,crbn,1,HMG-CoA reductase,P04035,502,4
+117,crbn,0,Tyrosine-protein kinase JAK2,O60674,903,4
+713,crbn,1,GTPase KRas,P01116,147,4
+1177,crbn,1,Mitogen-activated protein kinase 14,Q16539,15,4
+214,crbn,0,ABL,P00519,467,0
+877,crbn,0,von Hippel-Lindau disease tumor suppressor,P40337,171,4
+806,crbn,0,"Indoleamine 2,3-dioxygenase 1",P14902,101,0
+320,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,155,0
+649,crbn,0,Signal transducer and activator of transcription 3,P40763,574,0
+221,crbn,1,ABL,P00519,274,2
+1153,crbn,1,ABL,P00519,294,0
+1109,crbn,1,HMG-CoA reductase,P04035,885,4
+804,crbn,0,"Indoleamine 2,3-dioxygenase 1",P14902,61,0
+633,crbn,1,Signal transducer and activator of transcription 3,P40763,685,3
+110,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,155,0
+751,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,99,4
+708,crbn,0,GTPase KRas,P01116,147,4
+141,crbn,1,EGFR T790M,P00533,757,4
+398,crbn,1,BTK kinase domain,Q06187,573,0
+441,crbn,1,Cyclin-dependent kinase 6,Q00534,26,4
+702,crbn,0,GTPase KRas,P01116,147,4
+1028,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,141,0
+1009,crbn,1,EGFR T790M,P00533,713,0
+402,crbn,1,BTK kinase domain,Q06187,515,0
+699,crbn,0,GTPase KRas,P01116,147,4
+1151,crbn,1,ABL,P00519,467,0
+997,crbn,1,EGFR T790M,P00533,806,0
+153,crbn,0,Receptor-type tyrosine-protein kinase FLT3,P36888,602,0
+440,crbn,1,Cyclin-dependent kinase 6,Q00534,3,4
+644,crbn,1,Signal transducer and activator of transcription 3,P40763,685,3
+854,crbn,1,Casein kinase II subunit alpha,P68400,303,2
+410,crbn,0,BTK kinase domain,Q06187,515,0
+981,crbn,1,Protein-tyrosine kinase 2-beta,Q14289,640,4
+520,crbn,0,Estrogen receptor,P03372,492,0
+159,crbn,1,BTK kinase domain,Q06187,447,0
+1150,crbn,1,ABL,P00519,467,0
+239,crbn,1,BRD9,Q9H8M2,224,0
+889,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,112,0
+56,crbn,0,EGFR T790M,P00533,860,4
+754,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,155,0
+558,crbn,1,Cyclin-dependent kinase 6,Q00534,230,4
+437,crbn,0,Cyclin-dependent kinase 6,Q00534,230,4
+1152,crbn,1,ABL,P00519,467,0
+203,crbn,1,BTK kinase domain,Q06187,515,0
+411,crbn,1,BTK kinase domain,Q06187,595,0
+1180,crbn,0,"Retinal rod rhodopsin-sensitive cGMP 3',5'-cyclic phosphodiesterase subunit delta",O43924,83,0
+1207,crbn,1,Programmed cell death 1 ligand 1,Q9NZQ7,25,0
+1102,crbn,0,HMG-CoA reductase,P04035,474,4
+333,crbn,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,155,0
+1169,crbn,0,Mitogen-activated protein kinase 14,Q16539,121,0
+979,crbn,0,Protein-tyrosine kinase 2-beta,Q14289,623,0
+422,crbn,1,Cyclin-dependent kinase 6,Q00534,111,4
+779,crbn,0,GTPase KRas,P01116,5,0
+975,crbn,1,Protein-tyrosine kinase 2-beta,Q14289,623,0
+991,crbn,0,Protein-tyrosine kinase 2-beta,Q14289,640,4
+243,crbn,0,BRD9,Q9H8M2,224,0
+1166,crbn,1,Mitogen-activated protein kinase 14,Q16539,15,4
+1159,crbn,1,Mitogen-activated protein kinase 14,Q16539,233,3
+1160,crbn,1,Mitogen-activated protein kinase 14,Q16539,15,4
+465,crbn,0,Poly [ADP-ribose] polymerase 1,P09874,695,2
+138,crbn,1,EGFR T790M,P00533,860,4
+232,crbn,1,BRD9,Q9H8M2,224,0
+907,crbn,1,ABL,P00519,274,2
+136,crbn,1,EGFR T790M,P00533,929,4
+1170,crbn,1,Mitogen-activated protein kinase 14,Q16539,15,4
+120,crbn,0,Tyrosine-protein kinase JAK2,O60674,1055,0
+906,crbn,1,ABL,P00519,274,2
+1155,crbn,0,Mitogen-activated protein kinase 14,Q16539,295,4
+395,crbn,1,BTK kinase domain,Q06187,400,0
+805,crbn,0,"Indoleamine 2,3-dioxygenase 1",P14902,94,0
+163,vhl,0,TANK-binding kinase 1,Q9UHD2,545,3
+416,crbn,1,BTK kinase domain,Q06187,573,0
+967,crbn,1,Cyclin-dependent kinase 6,Q00534,3,4
+1163,crbn,0,Mitogen-activated protein kinase 14,Q16539,15,4
+807,crbn,0,"Indoleamine 2,3-dioxygenase 1",P14902,61,0
+1179,crbn,0,"Retinal rod rhodopsin-sensitive cGMP 3',5'-cyclic phosphodiesterase subunit delta",O43924,57,0
+199,crbn,1,BTK kinase domain,Q06187,637,0
+809,crbn,1,"Indoleamine 2,3-dioxygenase 1",P14902,137,0
+196,crbn,1,BTK kinase domain,Q06187,573,0
+1133,crbn,1,"Retinal rod rhodopsin-sensitive cGMP 3',5'-cyclic phosphodiesterase subunit delta",O43924,4,0
+1097,crbn,1,HMG-CoA reductase,P04035,501,0
+995,crbn,0,EGFR T790M,P00533,757,4
+959,crbn,1,Cyclin-dependent kinase 6,Q00534,34,2
+426,crbn,1,Cyclin-dependent kinase 6,Q00534,3,4
+701,crbn,0,GTPase KRas,P01116,117,4
+1161,crbn,1,Mitogen-activated protein kinase 14,Q16539,15,4
+1144,crbn,1,ABL,P00519,294,0
+908,crbn,0,ABL,P00519,274,2
+999,crbn,0,EGFR T790M,P00533,713,0
+452,crbn,1,BTK kinase domain,Q06187,406,0
+557,crbn,1,Cyclin-dependent kinase 6,Q00534,279,4
+1158,crbn,1,Mitogen-activated protein kinase 14,Q16539,295,4
+391,crbn,1,BTK kinase domain,Q06187,400,0
+439,crbn,0,Cyclin-dependent kinase 6,Q00534,279,4
+1076,crbn,1,Wee1-like protein kinase,P30291,332,1
+143,crbn,1,EGFR T790M,P00533,823,0
+978,crbn,1,Protein-tyrosine kinase 2-beta,Q14289,623,0
+519,crbn,0,Estrogen receptor,P03372,492,0
+990,crbn,0,Protein-tyrosine kinase 2-beta,Q14289,640,4
+1000,crbn,0,EGFR T790M,P00533,713,0
+462,crbn,0,Poly [ADP-ribose] polymerase 1,P09874,802,4
+326,crbn,1,Cyclin-dependent kinase 6,Q00534,34,2
+1167,crbn,1,Mitogen-activated protein kinase 14,Q16539,15,4
+960,crbn,1,Cyclin-dependent kinase 6,Q00534,3,4
+429,crbn,1,Cyclin-dependent kinase 6,Q00534,34,2
+905,crbn,1,ABL,P00519,467,0
+562,crbn,1,B-cell lymphoma 6 protein,P41182,126,1
+556,crbn,1,Cyclin-dependent kinase 6,Q00534,230,4
+423,crbn,1,Cyclin-dependent kinase 6,Q00534,3,4
+1002,crbn,0,EGFR T790M,P00533,757,4
+1004,crbn,0,EGFR T790M,P00533,713,0
+994,crbn,1,EGFR T790M,P00533,708,4
+1165,crbn,1,Mitogen-activated protein kinase 14,Q16539,15,4
+872,crbn,1,von Hippel-Lindau disease tumor suppressor,P40337,196,4
+982,crbn,1,Protein-tyrosine kinase 2-beta,Q14289,623,0
+428,crbn,1,Cyclin-dependent kinase 6,Q00534,279,4
+463,vhl,0,Poly [ADP-ribose] polymerase 1,P09874,662,4
+1008,crbn,0,EGFR T790M,P00533,708,4
+1085,crbn,0,HMG-CoA reductase,P04035,501,0
+853,crbn,1,Casein kinase II subunit alpha,P68400,303,2
+1164,crbn,1,Mitogen-activated protein kinase 14,Q16539,15,4
+826,vhl,1,Tyrosine-protein phosphatase non-receptor type 11,Q06124,164,0
+443,crbn,1,Cyclin-dependent kinase 6,Q00534,230,4
+1171,crbn,1,Mitogen-activated protein kinase 14,Q16539,15,4
+139,crbn,1,EGFR T790M,P00533,708,4
+835,vhl,1,Tyrosine-protein phosphatase non-receptor type 11,Q06124,164,0
+1005,crbn,1,EGFR T790M,P00533,860,4
+909,crbn,0,ABL,P00519,262,0
+1073,crbn,1,Wee1-like protein kinase,P30291,292,4
+137,crbn,1,EGFR T790M,P00533,757,4
+836,vhl,1,Tyrosine-protein phosphatase non-receptor type 11,Q06124,164,0
+825,vhl,1,Tyrosine-protein phosphatase non-receptor type 11,Q06124,164,0
+964,crbn,1,Cyclin-dependent kinase 6,Q00534,230,4
+1174,crbn,1,Mitogen-activated protein kinase 14,Q16539,15,4
+1173,crbn,1,Mitogen-activated protein kinase 14,Q16539,15,4
+1157,crbn,1,Mitogen-activated protein kinase 14,Q16539,15,4
+998,crbn,1,EGFR T790M,P00533,708,4
+710,crbn,0,GTPase KRas,P01116,5,0
+75,crbn,0,Interleukin-1 receptor-associated kinase 4,Q9NWZ3,174,0
+1181,crbn,0,"Retinal rod rhodopsin-sensitive cGMP 3',5'-cyclic phosphodiesterase subunit delta",O43924,29,4
+870,crbn,0,von Hippel-Lindau disease tumor suppressor,P40337,196,4
+1003,crbn,0,EGFR T790M,P00533,708,4
+971,crbn,1,Protein-tyrosine kinase 2-beta,Q14289,448,3
+726,crbn,1,Cyclin-dependent kinase 6,Q00534,26,4
+1176,crbn,1,Mitogen-activated protein kinase 14,Q16539,15,4
+1162,crbn,1,Mitogen-activated protein kinase 14,Q16539,15,4
+1168,crbn,1,Mitogen-activated protein kinase 14,Q16539,15,4
+1175,crbn,1,Mitogen-activated protein kinase 14,Q16539,15,4
+961,crbn,1,Cyclin-dependent kinase 6,Q00534,230,4
+73,vhl,1,Interleukin-1 receptor-associated kinase 4,Q9NWZ3,448,0
+813,vhl,0,Histone Deacetylase,Q92769,362,4
+968,crbn,1,Cyclin-dependent kinase 6,Q00534,111,4
+827,vhl,1,Tyrosine-protein phosphatase non-receptor type 11,Q06124,166,0
+834,vhl,1,Tyrosine-protein phosphatase non-receptor type 11,Q06124,389,3
+99,vhl,0,ABL,P00519,467,0
+693,vhl,1,Androgen receptor,P10275,826,3
+81,vhl,1,Interleukin-1 receptor-associated kinase 4,Q9NWZ3,448,0
+689,vhl,1,Androgen receptor,P10275,826,3
+828,vhl,1,Tyrosine-protein phosphatase non-receptor type 11,Q06124,166,0
+1075,crbn,1,Wee1-like protein kinase,P30291,565,0
+725,crbn,1,Cyclin-dependent kinase 6,Q00534,216,0
+816,vhl,0,Tyrosine-protein phosphatase non-receptor type 11,Q06124,389,3
+874,crbn,0,von Hippel-Lindau disease tumor suppressor,P40337,196,4
+819,vhl,0,Tyrosine-protein phosphatase non-receptor type 11,Q06124,389,3
+80,vhl,1,Interleukin-1 receptor-associated kinase 4,Q9NWZ3,174,0
+303,vhl,1,Androgen receptor,P10275,826,3
+818,vhl,0,Tyrosine-protein phosphatase non-receptor type 11,Q06124,324,0
+1074,crbn,1,Wee1-like protein kinase,P30291,292,4
+846,vhl,1,von Hippel-Lindau disease tumor suppressor,P40337,171,4
+70,vhl,1,EGFR T790M,P00533,867,4
+837,vhl,1,Tyrosine-protein phosphatase non-receptor type 11,Q06124,166,0
+178,vhl,1,TANK-binding kinase 1,Q9UHD2,596,2
+823,vhl,1,Tyrosine-protein phosphatase non-receptor type 11,Q06124,324,0
+838,vhl,1,Tyrosine-protein phosphatase non-receptor type 11,Q06124,389,3
+829,vhl,1,Tyrosine-protein phosphatase non-receptor type 11,Q06124,389,3
+880,crbn,0,von Hippel-Lindau disease tumor suppressor,P40337,196,4
+875,crbn,1,von Hippel-Lindau disease tumor suppressor,P40337,196,4
+833,vhl,1,Tyrosine-protein phosphatase non-receptor type 11,Q06124,324,0
+881,crbn,0,von Hippel-Lindau disease tumor suppressor,P40337,196,4
+69,vhl,1,EGFR T790M,P00533,949,0
+821,vhl,0,Tyrosine-protein phosphatase non-receptor type 11,Q06124,324,0
+122,vhl,0,Tyrosine-protein kinase JAK2,O60674,1083,0
+669,vhl,0,Androgen receptor,P10275,721,0
+876,crbn,1,von Hippel-Lindau disease tumor suppressor,P40337,196,4
+468,vhl,1,Androgen receptor,P10275,826,3
+847,vhl,1,von Hippel-Lindau disease tumor suppressor,P40337,171,4
+543,vhl,1,Estrogen receptor,P03372,416,0
+817,vhl,0,Tyrosine-protein phosphatase non-receptor type 11,Q06124,389,3
+170,vhl,1,TANK-binding kinase 1,Q9UHD2,60,2
+311,vhl,1,Androgen receptor,P10275,826,3
+814,vhl,1,Histone Deacetylase,Q92769,362,4
+145,vhl,1,EGFR T790M,P00533,949,0
+871,crbn,1,von Hippel-Lindau disease tumor suppressor,P40337,196,4
+873,crbn,1,von Hippel-Lindau disease tumor suppressor,P40337,196,4
+166,vhl,1,TANK-binding kinase 1,Q9UHD2,60,2
+878,crbn,0,von Hippel-Lindau disease tumor suppressor,P40337,196,4
+312,vhl,1,Androgen receptor,P10275,826,3
+182,vhl,1,TANK-binding kinase 1,Q9UHD2,589,2
+822,vhl,1,Tyrosine-protein phosphatase non-receptor type 11,Q06124,324,0
+185,vhl,1,TANK-binding kinase 1,Q9UHD2,589,2
+295,vhl,1,Androgen receptor,P10275,826,3
+820,vhl,0,Tyrosine-protein phosphatase non-receptor type 11,Q06124,324,0
+125,vhl,0,Tyrosine-protein kinase JAK2,O60674,1083,0
+677,vhl,1,Androgen receptor,P10275,911,3
+879,crbn,1,von Hippel-Lindau disease tumor suppressor,P40337,196,4
+824,vhl,1,Tyrosine-protein phosphatase non-receptor type 11,Q06124,324,0
+671,vhl,1,Androgen receptor,P10275,718,0
+467,vhl,1,Receptor-type tyrosine-protein kinase FLT3,P36888,649,0
+528,vhl,1,Estrogen receptor,P03372,416,0
+235,vhl,0,BRD9,Q9H8M2,196,0
+680,vhl,1,Androgen receptor,P10275,823,0
+548,vhl,1,Estrogen receptor,P03372,416,0
+525,vhl,1,Estrogen receptor,P03372,416,0
+181,vhl,1,TANK-binding kinase 1,Q9UHD2,60,2
+1031,vhl,1,Mitogen-activated protein kinase 14,Q16539,233,3
+542,vhl,1,Estrogen receptor,P03372,299,0
+555,vhl,0,Estrogen receptor,P03372,416,0
+167,vhl,1,TANK-binding kinase 1,Q9UHD2,60,2
+666,vhl,1,Androgen receptor,P10275,721,0
+87,vhl,0,ABL,P00519,274,2
+526,vhl,1,Estrogen receptor,P03372,416,0
+236,vhl,0,BRD9,Q9H8M2,196,0
+523,vhl,0,Estrogen receptor,P03372,416,0
+301,vhl,1,Androgen receptor,P10275,862,0
+882,crbn,1,von Hippel-Lindau disease tumor suppressor,P40337,196,4
+529,vhl,0,Estrogen receptor,P03372,416,0
+722,vhl,1,Cyclin-dependent kinase 6,Q00534,264,4
+524,vhl,0,Estrogen receptor,P03372,416,0
+292,vhl,1,Androgen receptor,P10275,862,0
+315,vhl,1,Estrogen receptor,P03372,416,0
+522,vhl,1,Estrogen receptor,P03372,416,0
+544,vhl,1,Estrogen receptor,P03372,303,0
+551,vhl,0,Estrogen receptor,P03372,416,0
+533,vhl,1,Estrogen receptor,P03372,416,0
+97,vhl,1,ABL,P00519,262,0
+541,vhl,1,Estrogen receptor,P03372,416,0
+186,vhl,1,TANK-binding kinase 1,Q9UHD2,60,2
+547,vhl,1,Estrogen receptor,P03372,416,0
+532,vhl,1,Estrogen receptor,P03372,416,0
+119,vhl,0,Tyrosine-protein kinase JAK2,O60674,1083,0
+169,vhl,1,TANK-binding kinase 1,Q9UHD2,82,0
+359,vhl,1,Androgen receptor,P10275,721,0
+546,vhl,1,Estrogen receptor,P03372,416,0
+538,vhl,1,Estrogen receptor,P03372,416,0
+534,vhl,1,Estrogen receptor,P03372,416,0
+552,vhl,1,Estrogen receptor,P03372,416,0
+79,vhl,0,Interleukin-1 receptor-associated kinase 4,Q9NWZ3,416,2
+554,vhl,0,Estrogen receptor,P03372,416,0
+609,vhl,1,BRD9,Q9H8M2,196,0
+553,vhl,0,Estrogen receptor,P03372,416,0
+773,vhl,1,Estrogen receptor,P03372,416,0
+535,vhl,1,Estrogen receptor,P03372,416,0
+530,vhl,1,Estrogen receptor,P03372,416,0
+684,vhl,1,Androgen receptor,P10275,721,0
+473,vhl,1,Mitogen-activated protein kinase 14,Q16539,121,0
+549,vhl,0,Estrogen receptor,P03372,416,0
+539,vhl,1,Estrogen receptor,P03372,416,0
+545,vhl,1,Estrogen receptor,P03372,416,0
+772,vhl,1,Estrogen receptor,P03372,416,0
+187,vhl,0,TANK-binding kinase 1,Q9UHD2,30,4
+531,vhl,1,Estrogen receptor,P03372,416,0
+550,vhl,0,Estrogen receptor,P03372,416,0
+618,vhl,1,BRD9,Q9H8M2,196,0
+536,vhl,1,Estrogen receptor,P03372,416,0
+168,vhl,1,TANK-binding kinase 1,Q9UHD2,82,0
+184,vhl,1,TANK-binding kinase 1,Q9UHD2,589,2
+183,vhl,1,TANK-binding kinase 1,Q9UHD2,82,0
+189,vhl,1,TANK-binding kinase 1,Q9UHD2,589,2
+471,vhl,0,Androgen receptor,P10275,837,0
+300,vhl,1,Androgen receptor,P10275,862,0
+314,vhl,1,Estrogen receptor,P03372,416,0
+304,vhl,1,Androgen receptor,P10275,826,3
+610,vhl,0,BRD9,Q9H8M2,196,0
+373,vhl,1,Polycomb protein EED,O75530,408,0
+521,vhl,1,Estrogen receptor,P03372,416,0
+180,vhl,1,TANK-binding kinase 1,Q9UHD2,589,2
+537,vhl,1,Estrogen receptor,P03372,416,0
+191,vhl,1,TANK-binding kinase 1,Q9UHD2,82,0
+574,vhl,1,EGFR T790M,P00533,754,4
+540,vhl,0,Estrogen receptor,P03372,416,0
+96,vhl,1,ABL,P00519,274,2
+195,vhl,1,Steroid hormone receptor ERR1,P11474,244,0
+601,vhl,0,BRD9,Q9H8M2,196,0
+527,vhl,1,Estrogen receptor,P03372,416,0
+681,vhl,1,Androgen receptor,P10275,718,0
+171,vhl,1,TANK-binding kinase 1,Q9UHD2,30,4
+147,vhl,1,EGFR T790M,P00533,970,4
+293,vhl,1,Androgen receptor,P10275,718,0
+674,vhl,1,Androgen receptor,P10275,718,0
+616,vhl,1,BRD9,Q9H8M2,178,0
+287,vhl,0,Polycomb protein EED,O75530,408,0
+113,vhl,0,Tyrosine-protein kinase JAK2,O60674,962,0
+190,vhl,1,TANK-binding kinase 1,Q9UHD2,589,2
+433,vhl,0,Cyclin-dependent kinase 6,Q00534,274,4
+575,vhl,1,EGFR T790M,P00533,875,4
+611,vhl,1,BRD9,Q9H8M2,196,0
+675,vhl,1,Androgen receptor,P10275,718,0
+614,vhl,1,BRD9,Q9H8M2,196,0
+434,vhl,0,Cyclin-dependent kinase 6,Q00534,264,4
+596,vhl,1,BRD9,Q9H8M2,196,0
+598,vhl,0,BRD9,Q9H8M2,196,0
+435,vhl,0,Cyclin-dependent kinase 6,Q00534,264,4
+577,vhl,1,Hepatocyte growth factor receptor,P08581,1190,4
+620,vhl,1,BRD9,Q9H8M2,196,0
+208,vhl,0,ABL,P00519,467,0
+672,vhl,1,Androgen receptor,P10275,718,0
+285,vhl,0,Polycomb protein EED,O75530,408,0
+690,vhl,1,Androgen receptor,P10275,721,0
+173,vhl,1,TANK-binding kinase 1,Q9UHD2,589,2
+436,vhl,0,Cyclin-dependent kinase 6,Q00534,264,4
+286,vhl,0,Polycomb protein EED,O75530,408,0
+282,vhl,1,Polycomb protein EED,O75530,408,0
+475,vhl,1,ABL,P00519,400,2
+296,vhl,1,Androgen receptor,P10275,823,0
+604,vhl,1,BRD9,Q9H8M2,196,0
+606,vhl,1,BRD9,Q9H8M2,178,0
+694,vhl,1,Androgen receptor,P10275,718,0
+599,vhl,1,BRD9,Q9H8M2,196,0
+673,vhl,1,Androgen receptor,P10275,718,0
+682,vhl,1,Androgen receptor,P10275,718,0
+165,vhl,0,TANK-binding kinase 1,Q9UHD2,82,0
+177,vhl,0,TANK-binding kinase 1,Q9UHD2,589,2
+284,vhl,0,Polycomb protein EED,O75530,408,0
+146,vhl,1,EGFR T790M,P00533,949,0
+307,vhl,1,Androgen receptor,P10275,913,3
+188,vhl,1,TANK-binding kinase 1,Q9UHD2,589,2
+607,vhl,1,BRD9,Q9H8M2,178,0
+302,vhl,1,Androgen receptor,P10275,913,3
+615,vhl,1,BRD9,Q9H8M2,178,0
+98,vhl,0,ABL,P00519,467,0
+116,vhl,0,Tyrosine-protein kinase JAK2,O60674,1055,0
+832,vhl,1,Tyrosine-protein phosphatase non-receptor type 11,Q06124,178,0
+612,vhl,1,BRD9,Q9H8M2,196,0
+78,vhl,0,Interleukin-1 receptor-associated kinase 4,Q9NWZ3,156,0
+60,vhl,1,EGFR T790M,P00533,806,0
+692,vhl,1,Androgen receptor,P10275,823,0
+576,vhl,1,EGFR T790M,P00533,754,4
+283,vhl,1,Polycomb protein EED,O75530,408,0
+721,vhl,1,Cyclin-dependent kinase 6,Q00534,264,4
+605,vhl,1,BRD9,Q9H8M2,178,0
+678,vhl,1,Androgen receptor,P10275,718,0
+619,vhl,1,BRD9,Q9H8M2,196,0
+148,vhl,1,EGFR T790M,P00533,929,4
+943,vhl,1,ALK tyrosine kinase receptor,Q9UM73,1410,0
+600,vhl,0,BRD9,Q9H8M2,196,0
+849,vhl,0,von Hippel-Lindau disease tumor suppressor,P40337,171,4
+567,vhl,1,ALK tyrosine kinase receptor,Q9UM73,1410,0
+413,vhl,1,BTK kinase domain,Q06187,406,0
+695,vhl,1,Androgen receptor,P10275,721,0
+613,vhl,1,BRD9,Q9H8M2,178,0
+608,vhl,1,BRD9,Q9H8M2,178,0
+298,vhl,1,Androgen receptor,P10275,718,0
+90,vhl,0,ABL,P00519,262,0
+210,vhl,0,ABL,P00519,274,2
+83,vhl,0,ABL,P00519,262,0
+667,vhl,1,Androgen receptor,P10275,718,0
+685,vhl,1,Androgen receptor,P10275,718,0
+305,vhl,1,Androgen receptor,P10275,913,3
+67,vhl,0,EGFR T790M,P00533,970,4
+572,vhl,1,ALK tyrosine kinase receptor,Q9UM73,1410,0
+66,vhl,1,EGFR T790M,P00533,875,4
+174,vhl,1,TANK-binding kinase 1,Q9UHD2,69,0
+128,vhl,0,Tyrosine-protein kinase JAK2,O60674,850,0
+594,vhl,0,BRD9,Q9H8M2,29,0
+573,vhl,1,EGFR T790M,P00533,867,4
+720,vhl,1,Cyclin-dependent kinase 6,Q00534,111,4
+948,vhl,1,ALK tyrosine kinase receptor,Q9UM73,1285,0
+399,vhl,0,BTK kinase domain,Q06187,466,0
+472,vhl,1,Mitogen-activated protein kinase 14,Q16539,233,3
+294,vhl,1,Androgen receptor,P10275,721,0
+310,vhl,1,Androgen receptor,P10275,913,3
+597,vhl,1,BRD9,Q9H8M2,178,0
+414,vhl,1,BTK kinase domain,Q06187,406,0
+589,vhl,1,Cell division cycle protein 20 homolog,Q12834,259,4
+144,vhl,1,EGFR T790M,P00533,875,4
+590,vhl,0,BRD9,Q9H8M2,29,0
+679,vhl,1,Androgen receptor,P10275,718,0
+564,vhl,1,ALK tyrosine kinase receptor,Q9UM73,1352,0
+179,vhl,1,TANK-binding kinase 1,Q9UHD2,568,0
+683,vhl,0,Androgen receptor,P10275,718,0
+172,vhl,1,TANK-binding kinase 1,Q9UHD2,372,4
+308,vhl,1,Androgen receptor,P10275,911,3
+72,vhl,0,Interleukin-1 receptor-associated kinase 4,Q9NWZ3,156,0
+687,vhl,1,Androgen receptor,P10275,721,0
+68,vhl,1,EGFR T790M,P00533,913,0
+161,vhl,0,TANK-binding kinase 1,Q9UHD2,584,4
+617,vhl,1,BRD9,Q9H8M2,178,0
+602,vhl,1,BRD9,Q9H8M2,227,0
+939,vhl,1,GTPase KRas,P01116,128,4
+209,vhl,0,ABL,P00519,274,2
+851,vhl,0,von Hippel-Lindau disease tumor suppressor,P40337,171,4
+1010,vhl,0,EGFR T790M,P00533,913,0
+935,vhl,0,GTPase KRas,P01116,128,4
+65,vhl,1,EGFR T790M,P00533,806,0
+474,vhl,1,ABL,P00519,274,2
+940,vhl,0,GTPase KRas,P01116,128,4
+175,vhl,1,TANK-binding kinase 1,Q9UHD2,65,3
+603,vhl,1,BRD9,Q9H8M2,224,0
+61,vhl,1,EGFR T790M,P00533,737,4
+676,vhl,1,Androgen receptor,P10275,823,0
+568,vhl,1,ALK tyrosine kinase receptor,Q9UM73,1352,0
+569,vhl,1,ALK tyrosine kinase receptor,Q9UM73,1352,0
+565,vhl,1,ALK tyrosine kinase receptor,Q9UM73,1410,0
+570,vhl,1,ALK tyrosine kinase receptor,Q9UM73,1285,0
+688,vhl,1,Androgen receptor,P10275,823,0
+374,vhl,1,Polycomb protein EED,O75530,89,0
+944,vhl,1,ALK tyrosine kinase receptor,Q9UM73,1352,0
+415,vhl,1,BTK kinase domain,Q06187,558,0
+164,vhl,0,TANK-binding kinase 1,Q9UHD2,231,3
+946,vhl,1,ALK tyrosine kinase receptor,Q9UM73,1352,0
+936,vhl,1,GTPase KRas,P01116,128,4
+162,vhl,0,TANK-binding kinase 1,Q9UHD2,82,0
+400,vhl,0,BTK kinase domain,Q06187,406,0
+306,vhl,1,Androgen receptor,P10275,823,0
+71,vhl,0,EGFR T790M,P00533,823,0
+194,vhl,1,Receptor-interacting serine/threonine-protein kinase 2,O43353,110,0
+256,vhl,1,Probable global transcription activator SNF2L2,P51531,1445,0
+691,vhl,1,Androgen receptor,P10275,823,0
+217,vhl,0,ABL,P00519,356,0
+566,vhl,1,ALK tyrosine kinase receptor,Q9UM73,1352,0
+937,vhl,1,GTPase KRas,P01116,88,0
+291,vhl,1,"Retinal rod rhodopsin-sensitive cGMP 3',5'-cyclic phosphodiesterase subunit delta",O43924,4,0
+947,vhl,1,ALK tyrosine kinase receptor,Q9UM73,1410,0
+100,vhl,0,ABL,P00519,274,2
+207,vhl,0,ABL,P00519,285,4
+258,vhl,1,Probable global transcription activator SNF2L2,P51531,1445,0
+357,vhl,1,Androgen receptor,P10275,721,0
+595,vhl,0,BRD9,Q9H8M2,29,0
+668,vhl,0,Androgen receptor,P10275,718,0
+338,vhl,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,91,0
+358,vhl,1,Androgen receptor,P10275,718,0
+945,vhl,1,ALK tyrosine kinase receptor,Q9UM73,1410,0
+938,vhl,1,GTPase KRas,P01116,88,0
+670,vhl,1,Androgen receptor,P10275,911,3
+134,vhl,0,Tyrosine-protein kinase JAK2,O60674,850,0
+571,vhl,1,ALK tyrosine kinase receptor,Q9UM73,1352,0
+242,vhl,0,BRD9,Q9H8M2,155,0
+342,vhl,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,91,0
+845,vhl,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,91,0
+469,vhl,1,Androgen receptor,P10275,718,0
+843,vhl,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,91,0
+470,vhl,1,Androgen receptor,P10275,718,0
+351,vhl,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,91,0
+340,vhl,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,91,0
+324,vhl,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,91,0
+88,vhl,0,ABL,P00519,245,2
+844,vhl,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,91,0
+356,vhl,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,91,0
+341,vhl,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,91,0
+353,vhl,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,91,0
+1011,vhl,0,EGFR T790M,P00533,823,0
+352,vhl,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,91,0
+349,vhl,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,91,0
+355,vhl,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,91,0
+350,vhl,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,91,0
+84,vhl,0,ABL,P00519,400,2
+348,vhl,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,91,0
+323,vhl,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,91,0
+372,vhl,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,91,0
+347,vhl,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,99,4
+354,vhl,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,91,0
+339,vhl,1,BROMODOMAIN-CONTAINING PROTEIN 4,O60885,99,4
+95,vhl,1,ABL,P00519,245,2
+257,vhl,1,Probable global transcription activator SNF2L2,P51531,1445,0
+93,vhl,1,ABL,P00519,245,2
+131,vhl,0,Tyrosine-protein kinase JAK2,O60674,943,0
+86,vhl,0,ABL,P00519,274,2
+313,vhl,0,Androgen receptor,P10275,718,0
+85,vhl,0,ABL,P00519,467,0
+82,vhl,0,ABL,P00519,467,0
+92,vhl,1,ABL,P00519,247,0
+686,vhl,1,Androgen receptor,P10275,718,0
+91,vhl,1,ABL,P00519,245,2
+216,vhl,0,ABL,P00519,247,0
+94,vhl,1,ABL,P00519,400,2
+89,vhl,0,ABL,P00519,467,0
+297,vhl,1,Androgen receptor,P10275,721,0
+299,vhl,0,Androgen receptor,P10275,884,0
+593,vhl,1,BRD9,Q9H8M2,228,1
+218,vhl,0,ABL,P00519,467,0
+591,vhl,0,BRD9,Q9H8M2,228,1
+225,vhl,1,ABL,P00519,245,2
+309,vhl,1,Androgen receptor,P10275,721,0
+223,vhl,1,ABL,P00519,245,2
+224,vhl,1,ABL,P00519,245,2
+101,vhl,0,ABL,P00519,245,2
+592,vhl,1,BRD9,Q9H8M2,228,1
+563,vhl,1,ALK tyrosine kinase receptor,Q9UM73,1109,3
+848,vhl,1,von Hippel-Lindau disease tumor suppressor,P40337,196,4
+850,vhl,0,von Hippel-Lindau disease tumor suppressor,P40337,196,4
+215,vhl,0,ABL,P00519,262,0

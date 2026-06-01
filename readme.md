@@ -4,8 +4,9 @@
 
 ## Prepare envs
 
-We recommand CUDA GPU with 32G VRAM. 11G lead to ~1/2 complex out of memory, only suitable for small POI with VHL.
-On RTX4080 32G, a ternary spends about 2 mins. One RTX4060 8G, it will takes 10 mins.
+We recommand CUDA GPU with 32G VRAM. RTX2080Ti 11G lead to ~1/2 complex out of memory failure, only suitable for small POI with VHL.
+
+On VGPU 32G, a ternary spends about 2 mins. One RTX4060 8G, it will takes 10 mins or OOM fails.
 
 REINVENT4 and boltz supports CPU devices. However, it will be too slow for boltz.
 
@@ -29,16 +30,18 @@ export BOLTZ_CACHE = /root/autodl-tmp/boltz # change to your boltz cache dir, ca
 # install potential_linker
 cd ..
 git clone https://github.com/alchemistcai/PotentialLinker.git potential_linker
+# or: git clone https://gitee.com/regentsai/potential-linker.git potential_linker
 cd potential_linker
+wget https://zenodo.org/records/15641297/files/linkinvent_transformer_pubchem.prior?download=1 -o reinvent_prior/linkinvent_transformer_pubchem.prior
 pip install gemmi==0.7.5 dockq # gemmi can't parse pymol saved cif file in version 0.6.5
 mamba install pymol-open-source ipykernel biopython numpy=1.26.4 scikit-learn=1.6.1
 
-# if you want to use precomputed results directly
-wget zenodoxxxxre
-tar xxxx
+# if you want to use our precomputed results
+wget https://figshare.com/ndownloader/files/65152899 -o data_pl.zip
+unzip -o data_pl.zip
 ```
 
-If you want to precomputed results from raw database, execute the `ipynb` notebook and generating the results(about 30h).
+If you want to compute results from raw database, execute the [precompute.ipynb](precompute.ipynb) notebook and generating the results(about 30h).
 
 Using different GPU may lead to very slight difference because of device precision.
 
@@ -71,6 +74,10 @@ isim = [
 
 See [FGFR4.ipynb](FGFR4.ipynb) for examples.
 
+## Benchmark
+
+See respective scripts in the `benchmark` directory.
+
 ## Our Boltz Modification
 
 - Enable predicting affinity for ligands with more than 56 atoms.
@@ -80,7 +87,7 @@ See [FGFR4.ipynb](FGFR4.ipynb) for examples.
 
 ## Note
 
-Residue idx of Boltz starts from 1, while alignment of biopython starts from 0.
+Residue idx of Boltz starts from 1, while alignment of biopython starts from 0. I treated them already in the framework. If one want to develop new code, be careful.
 
 Protein sequences in PDB may have extra artificial residues (expression tags and so on). Be careful if the tags have LYS and were predicted as the PTM sites. See the sequence annotations in PDB if there is a warning.
 
