@@ -34,7 +34,7 @@ git clone https://github.com/alchemistcai/PotentialLinker.git potential_linker
 cd potential_linker
 wget https://zenodo.org/records/15641297/files/linkinvent_transformer_pubchem.prior?download=1 -o reinvent_prior/linkinvent_transformer_pubchem.prior
 pip install gemmi==0.7.5 dockq # gemmi can't parse pymol saved cif file in version 0.6.5
-mamba install pymol-open-source ipykernel biopython numpy=1.26.4 scikit-learn=1.6.1
+mamba install pymol-open-source ipykernel biopython numpy=1.26.4 scikit-learn=1.6.1 openbabel
 
 # if you want to use our precomputed results
 wget https://figshare.com/ndownloader/files/65152899 -o data_pl.zip
@@ -43,7 +43,7 @@ unzip -o data_pl.zip
 
 If you want to compute results from raw database, execute the [precompute.ipynb](precompute.ipynb) notebook and generating the results(about 30h).
 
-Using different GPU may lead to very slight difference because of device precision.
+Using different GPU may lead to slight difference because of device precision.
 
 If you fail to install REINVENT4 because of ISIM, alter the dependencies `REINVENT4/pyproject.toml` to my mirror repo:
 
@@ -83,6 +83,7 @@ See respective scripts in the `benchmark` directory.
 - Enable predicting affinity for ligands with more than 56 atoms.
 - Atom name method is not changed because it effects affinity scores calculation. "CL1xx","BR1xx" with more than 4 characters are treated as bad atoms right now.
 - Alter `pyproject.toml` to install gemmi 0.7.5. Fix `parse/mmcif.py` so that it can read pymol adjusted cif.
+- Fallback to openbabel when the 3D reference coordinate generation fails. Usually occurs for big molecules.
 - You can clone Boltz official repo and alter it by yourself to keep update with it.
 
 ## Note

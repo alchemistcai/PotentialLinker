@@ -1,0 +1,21 @@
+﻿Name,SMILES,Hep3B cell IC50 (μM),FGFR4 DC50 (μM)
+C1,N1([C@@H](C[C@H](C1)O)C(=O)NCc1ccc(cc1)c1scnc1C)C(=O)[C@H](C(C)(C)C)NC(=O)CCC(=O)N1CCN(CC1)c1cc(c(c(c1)C)Nc1nc2c(cn1)cc(cc2)c1c(c(cc(c1Cl)OC)OC)Cl)NC(=O)C=C,1.50±0.19,>1
+C2,N1([C@@H](C[C@H](C1)O)C(=O)NCc1ccc(cc1)c1scnc1C)C(=O)[C@H](C(C)(C)C)NC(=O)CCCCC(=O)N1CCN(CC1)c1cc(c(c(c1)C)Nc1nc2c(cn1)cc(cc2)c1c(c(cc(c1Cl)OC)OC)Cl)NC(=O)C=C,2.64±0.08,>1
+C3,N1([C@@H](C[C@H](C1)O)C(=O)NCc1ccc(cc1)c1scnc1C)C(=O)[C@H](C(C)(C)C)NC(=O)CCCCCCC(=O)N1CCN(CC1)c1cc(c(c(c1)C)Nc1nc2c(cn1)cc(cc2)c1c(c(cc(c1Cl)OC)OC)Cl)NC(=O)C=C,>3,>1
+C4,N1([C@@H](C[C@H](C1)O)C(=O)NCc1ccc(cc1)c1scnc1C)C(=O)[C@H](C(C)(C)C)NC(=O)CCOCCC(=O)N1CCN(CC1)c1cc(c(c(c1)C)Nc1nc2c(cn1)cc(cc2)c1c(c(cc(c1Cl)OC)OC)Cl)NC(=O)C=C,>3,>1
+C5,N1([C@@H](C[C@H](C1)O)C(=O)NCc1ccc(cc1)c1scnc1C)C(=O)[C@H](C(C)(C)C)NC(=O)CCOCCOCCC(=O)N1CCN(CC1)c1cc(c(c(c1)C)Nc1nc2c(cn1)cc(cc2)c1c(c(cc(c1Cl)OC)OC)Cl)NC(=O)C=C,>3,>1
+C6,N1([C@@H](C[C@H](C1)O)C(=O)NCc1ccc(cc1)c1scnc1C)C(=O)[C@@H](NC(=O)CCOCCOCCOCCOCCC(=O)N1CCN(CC1)c1cc(c(c(c1)C)Nc1nc2c(cn1)cc(cc2)c1c(c(cc(c1Cl)OC)OC)Cl)NC(=O)C=C)C(C)(C)C,>3,>1
+D1,C(=O)(C=C)Nc1c(c(cc(c1)N1CCN(CC1)c1c2C(=O)N(C(=O)c2ccc1)C1C(=O)NC(=O)CC1)C)Nc1nc2c(cn1)cc(cc2)c1c(c(cc(c1Cl)OC)OC)Cl,0.526±0.01,0.452±0.01
+D2,C(=O)(C=C)Nc1c(c(cc(c1)N1CCN(CC1)C(=O)CCNc1c2C(=O)N(C(=O)c2ccc1)C1C(=O)NC(=O)CC1)C)Nc1nc2c(cn1)cc(cc2)c1c(c(cc(c1Cl)OC)OC)Cl,0.728±0.02,0.538±0.13
+D3,C(=O)(C=C)Nc1c(c(cc(c1)N1CCN(CC1)C(=O)CCCCNc1c2C(=O)N(C(=O)c2ccc1)C1C(=O)NC(=O)CC1)C)Nc1nc2c(cn1)cc(cc2)c1c(c(cc(c1Cl)OC)OC)Cl,0.283±0.01,0.176±0.02
+D4,C(=O)(C=C)Nc1c(c(cc(c1)N1CCN(CC1)C(=O)CCCCCCNc1c2C(=O)N(C(=O)c2ccc1)C1C(=O)NC(=O)CC1)C)Nc1nc2c(cn1)cc(cc2)c1c(c(cc(c1Cl)OC)OC)Cl,0.964±0.02,0.957±0.12
+D5,C(=O)(C=C)Nc1c(c(cc(c1)N1CCN(CC1)C(=O)CCCCCCCCNc1c2C(=O)N(C(=O)c2ccc1)C1C(=O)NC(=O)CC1)C)Nc1nc2c(cn1)cc(cc2)c1c(c(cc(c1Cl)OC)OC)Cl,>3,>1
+D6,C(=O)(C=C)Nc1c(c(cc(c1)N1CCN(CC1)C(=O)CCCCCCCCCCNc1c2C(=O)N(C(=O)c2ccc1)C1C(=O)NC(=O)CC1)C)Nc1nc2c(cn1)cc(cc2)c1c(c(cc(c1Cl)OC)OC)Cl,>3,>1
+D7,C(=O)(C=C)Nc1c(c(cc(c1)N1CCN(CC1)C(=O)CCOCCNc1c2C(=O)N(C(=O)c2ccc1)C1C(=O)NC(=O)CC1)C)Nc1nc2c(cn1)cc(cc2)c1c(c(cc(c1Cl)OC)OC)Cl,1.15±0.02,>1
+D8,C(=O)(C=C)Nc1c(c(cc(c1)N1CCN(CC1)C(=O)CCOCCOCCNc1c2C(=O)N(C(=O)c2ccc1)C1C(=O)NC(=O)CC1)C)Nc1nc2c(cn1)cc(cc2)c1c(c(cc(c1Cl)OC)OC)Cl,>3,>1
+D9,C(=O)(C=C)Nc1c(c(cc(c1)N1CCN(CC1)C(=O)CCOCCOCCOCCOCCNc1c2C(=O)N(C(=O)c2ccc1)C1C(=O)NC(=O)CC1)C)Nc1nc2c(cn1)cc(cc2)c1c(c(cc(c1Cl)OC)OC)Cl,>3,>1
+D10,C(=O)(C=C)Nc1c(c(cc(c1)N1CCN(CC1)C(=O)CCOCCOCCOCCOCCOCCOCCNc1c2C(=O)N(C(=O)c2ccc1)C1C(=O)NC(=O)CC1)C)Nc1nc2c(cn1)cc(cc2)c1c(c(cc(c1Cl)OC)OC)Cl,>3,>1
+D11,C(=O)(C=C)Nc1c(c(cc(c1)N1CCN(CC1)CC1CCN(CC1)c1c2C(=O)N(C(=O)c2ccc1)C1C(=O)NC(=O)CC1)C)Nc1nc2c(cn1)cc(cc2)c1c(c(cc(c1Cl)OC)OC)Cl,0.060±0.01,0.056±0.01
+D12,C(=O)(C=C)Nc1c(c(cc(c1)N1CCN(CC1)CC1CN(CC1)c1c2C(=O)N(C(=O)c2ccc1)C1C(=O)NC(=O)CC1)C)Nc1nc2c(cn1)cc(cc2)c1c(c(cc(c1Cl)OC)OC)Cl,0.134±0.02,0.098±0.01
+D13,C(=O)(C=C)Nc1c(c(cc(c1)N1CCN(CC1)CC1CN(C1)c1c2C(=O)N(C(=O)c2ccc1)C1C(=O)NC(=O)CC1)C)Nc1nc2c(cn1)cc(cc2)c1c(c(cc(c1Cl)OC)OC)Cl,0.207±0.01,0.124±0.02
+BLU554,COC1=CC(=C(C(=C1Cl)C2=CC3=CN=C(N=C3C=C2)N[C@@H]4COCC[C@@H]4NC(=O)C=C)Cl)OC,0.083±0.01,NA

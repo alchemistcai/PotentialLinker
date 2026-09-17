@@ -1,0 +1,14 @@
+id,PROTAC SMILES,protein_name,pdbid,ligid,chain_poi,chain_lig,E3 Ligase,RIPK1 degradation% @1μM
+6,C1(=O)N(C(=O)c2c(cccc12)OCCn1ncc(c1)c1cnc(c(c1)Oc1cc2CCN(c2cc1)C(=O)Cc1cc(ccc1)C(F)(F)F)N)C1C(=O)NC(=O)CC1,RIPK1,4NEU,Q1A,A,A,crbn,<5
+7,C1(=O)N(C(=O)c2c(cccc12)OCCOCCn1ncc(c1)c1cnc(c(c1)Oc1cc2CCN(c2cc1)C(=O)Cc1cc(ccc1)C(F)(F)F)N)C1C(=O)NC(=O)CC1,RIPK1,4NEU,Q1A,A,A,crbn,9.3
+8,C1(=O)N(C(=O)c2c(cccc12)OCCOCCOCCn1ncc(c1)c1cnc(c(c1)Oc1cc2CCN(c2cc1)C(=O)Cc1cc(ccc1)C(F)(F)F)N)C1C(=O)NC(=O)CC1,RIPK1,4NEU,Q1A,A,A,crbn,<5
+9,C1(=O)N(C(=O)c2c(cccc12)OCCOCCOCCOCCn1ncc(c1)c1cnc(c(c1)Oc1cc2CCN(c2cc1)C(=O)Cc1cc(ccc1)C(F)(F)F)N)C1C(=O)NC(=O)CC1,RIPK1,4NEU,Q1A,A,A,crbn,<5
+10,C1(=O)N(C(=O)c2cc(ccc12)OCCn1ncc(c1)c1cnc(c(c1)Oc1cc2CCN(c2cc1)C(=O)Cc1cc(ccc1)C(F)(F)F)N)C1C(=O)NC(=O)CC1,RIPK1,4NEU,Q1A,A,A,crbn,<5
+11,C1(=O)N(C(=O)c2cc(ccc12)OCCOCCn1ncc(c1)c1cnc(c(c1)Oc1cc2CCN(c2cc1)C(=O)Cc1cc(ccc1)C(F)(F)F)N)C1C(=O)NC(=O)CC1,RIPK1,4NEU,Q1A,A,A,crbn,<5
+12,C1(=O)N(C(=O)c2cc(ccc12)OCCOCCOCCn1ncc(c1)c1cnc(c(c1)Oc1cc2CCN(c2cc1)C(=O)Cc1cc(ccc1)C(F)(F)F)N)C1C(=O)NC(=O)CC1,RIPK1,4NEU,Q1A,A,A,crbn,<5
+13,C1(=O)N(C(=O)c2cc(ccc12)OCCOCCOCCOCCn1ncc(c1)c1cnc(c(c1)Oc1cc2CCN(c2cc1)C(=O)Cc1cc(ccc1)C(F)(F)F)N)C1C(=O)NC(=O)CC1,RIPK1,4NEU,Q1A,A,A,crbn,<5
+14,N1([C@@H](C[C@H](C1)O)C(=O)N[C@@H](C)c1ccc(cc1)c1scnc1C)C(=O)[C@H](C(C)(C)C)NC(=O)CCn1ncc(c1)c1cnc(c(c1)Oc1cc2CCN(c2cc1)C(=O)Cc1cc(ccc1)C(F)(F)F)N,RIPK1,4NEU,Q1A,A,A,vhl,28.9
+15,N1([C@@H](C[C@H](C1)O)C(=O)N[C@@H](C)c1ccc(cc1)c1scnc1C)C(=O)[C@H](C(C)(C)C)NC(=O)CCOCCn1ncc(c1)c1cnc(c(c1)Oc1cc2CCN(c2cc1)C(=O)Cc1cc(ccc1)C(F)(F)F)N,RIPK1,4NEU,Q1A,A,A,vhl,41.3
+16,N1([C@@H](C[C@H](C1)O)C(=O)N[C@@H](C)c1ccc(cc1)c1scnc1C)C(=O)[C@H](C(C)(C)C)NC(=O)CCOCCOCCn1ncc(c1)c1cnc(c(c1)Oc1cc2CCN(c2cc1)C(=O)Cc1cc(ccc1)C(F)(F)F)N,RIPK1,4NEU,Q1A,A,A,vhl,56.4
+17,N1([C@@H](C[C@H](C1)O)C(=O)N[C@@H](C)c1ccc(cc1)c1scnc1C)C(=O)[C@@H](NC(=O)CCOCCOCCOCCn1ncc(c1)c1cnc(c(c1)Oc1cc2CCN(c2cc1)C(=O)Cc1cc(ccc1)C(F)(F)F)N)C(C)(C)C,RIPK1,4NEU,Q1A,A,A,vhl,40.5
+18,N1([C@@H](C[C@H](C1)O)C(=O)N[C@@H](C)c1ccc(cc1)c1scnc1C)C(=O)[C@@H](NC(=O)CCOCCOCCOCCOCCn1ncc(c1)c1cnc(c(c1)Oc1cc2CCN(c2cc1)C(=O)Cc1cc(ccc1)C(F)(F)F)N)C(C)(C)C,RIPK1,4NEU,Q1A,A,A,vhl,89.7
