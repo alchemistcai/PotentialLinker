@@ -37,8 +37,7 @@ pip install gemmi==0.7.5 dockq # gemmi can't parse pymol saved cif file in versi
 mamba install pymol-open-source ipykernel biopython numpy=1.26.4 scikit-learn=1.6.1 openbabel
 
 # if you want to use our precomputed results
-wget https://figshare.com/ndownloader/files/65152899 -o data_pl.zip
-unzip -o data_pl.zip
+# visit https://figshare.com/ndownloader/files/65152899 to download the zip and unzip it
 ```
 
 If you want to compute results from raw database, execute the [precompute.ipynb](precompute.ipynb) notebook and generating the results(about 30h).
@@ -62,7 +61,7 @@ isim = [
   - Use a unique atom like P/Br/Pt as a placeholder and alter it to `*` manually later if your software don't support wildcards.
   - Covalent ligands should remove leaving groups. Addition reaction sites should be added already without protein sidechains.
     - For example, michael receptor "C=C-C(=O)xxxx-linker" should be `C-C-C(=O)xxxx*`.
-    - Chloroacetamide "ClC(=O)NH-xxxx-linker" should be `C(=O)NH-xxxx*`.
+    - Chloroacetamide "ClCC(=O)NH-xxxx-linker" should be `CC(=O)NH-xxxx*`.
     - Again, CCD gives an reacted product SMILES if it is a covalent ligand.
 - Modify `boltz_fgfr4_vhl|crbn.toml` and adjust parameters in `[[stage.scoring.component.BoltzScore.endpoint]]`.
   - Log name, checkpoint names and other related parameters should be altered too.
@@ -80,10 +79,10 @@ See respective scripts in the `benchmark` directory.
 
 ## Our Boltz Modification
 
-- Enable predicting affinity for ligands with more than 56 atoms.
+- Enable affinity prediction for ligands with more than 56 atoms.
 - Atom name method is not changed because it effects affinity scores calculation. "CL1xx","BR1xx" with more than 4 characters are treated as bad atoms right now.
 - Alter `pyproject.toml` to install gemmi 0.7.5. Fix `parse/mmcif.py` so that it can read pymol adjusted cif.
-- Fallback to openbabel when the 3D reference coordinate generation fails. Usually occurs for big molecules.
+- Fallback to openbabel when the 3D reference coordinate generation fails. Usually occurs on big molecules.
 - You can clone Boltz official repo and alter it by yourself to keep update with it.
 
 ## Note
