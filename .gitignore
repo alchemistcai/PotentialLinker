@@ -20,6 +20,8 @@ reinvent_prior/
 !benchmark/*.txt
 benchmark/PDB14/*
 !benchmark/PDB14/precompute.py
+!benchmark/PDB14/plot.ipynb
+!benchmark/PDB14/protac-invent-rmsd.jpeg
 !benchmark/PDB14/*.a3m
 !benchmark/PDB14/*.csv
 benchmark/STAT3/**

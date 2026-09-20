@@ -129,12 +129,13 @@ ax.set_ylim(plotted_log_dc50.min()-0.2,plotted_log_dc50.max()+0.25)
 x_limits=ax.get_xlim()
 x_fit=np.linspace(x_limits[0],x_limits[1],50)
 ax.plot(x_fit,intercept+slope*x_fit,color='0.25',linewidth=1.5,zorder=2)
-ax.set_xlabel('NWHM',fontsize=11)
-ax.set_ylabel('log(DC50/μM)',fontsize=11)
-# R2 sits in the legend frame as its title, so one box carries the statistic and the marker key
-ax.legend(fontsize=9,loc='lower left',framealpha=1,facecolor='white',alignment='left',
+ax.set_xlabel('NWHM',fontsize=13)
+ax.set_ylabel('log(DC50/μM)',fontsize=13)
+ax.tick_params(axis='both',labelsize=12)
+# R2 sits in the legend frame as its title, so one box carries both the statistic and the marker key
+ax.legend(fontsize=11,loc='lower left',framealpha=1,facecolor='white',alignment='left',
           title=f'$R^2$ = {r2:.2f} (n = {len(measured)}, 95% CI [{r2_ci[0]:.2f}, {r2_ci[1]:.2f}])',
-          title_fontsize=9)
+          title_fontsize=11)
 plt.tight_layout()
 plt.savefig('../../pics/stat3_dc50_nwhm.png',dpi=600)
 plt.close(fig)

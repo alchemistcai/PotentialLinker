@@ -314,12 +314,41 @@ def cif_boltz2uniprot(cif_file:str,seq_poi_boltz:str,seq_poi_uniprot:str):
         cmd.alter(f'chain P and resi {idx_boltz+5000}',f'resi={idx_uniprot}')
         cmd.save(cif_file_uniprot_path)
 
-def generate_pymol_pse(cif_file:str,lys_site:int,ref_cif_poi:str='',ref_cif_align_selection:str='',ref_cif_e3:str='',ref_cif_ternary:str='',covalent_resid:int=0,covalent_res_atomname='SG',covalent_lig_atomname: str='C104',):
+def read_covalent_bond(ternary_yaml:str,ligand_chain:str='L') -> dict[str,tuple[str,int,str]]:
+    '''Read the covalent bond constraint of a boltz input yaml.
+
+    Keys are `ligand` and `protein`, values are (chain, resid, atom name). Residue numbering follows
+    the boltz chain, so the protein resid still needs cif_boltz2uniprot mapping before it matches a
+    *_uni.cif; the ligand side is unaffected. An empty dict means the yaml holds no bond constraint
+    (a non-covalent run).'''
+    bond:dict[str,tuple[str,int,str]]={}
+    with open(ternary_yaml,encoding='utf-8') as yaml_file:
+        for line in yaml_file:
+            if not line.strip().startswith(('atom1:','atom2:')):
+                continue
+            chain,resid,atom_name=[item.strip() for item in line.split('[',1)[1].split(']',1)[0].split(',')]
+            bond['ligand' if chain==ligand_chain else 'protein']=(chain,int(resid),atom_name)
+    return bond
+
+# the covalent ligand atom name follows the atom order of each molecule, so pass covalent_yaml (the boltz input yaml of the same molecule) to read the bond constraint
+def generate_pymol_pse(cif_file:str,lys_site:int,ref_cif_poi:str='',ref_cif_align_selection:str='',ref_cif_e3:str='',ref_cif_ternary:str='',covalent_resid:int=0,covalent_res_atomname='SG',covalent_lig_atomname:str='',covalent_yaml:str='',):
     '''Create a pymol project session file, including the predicted machinery+poi structure, Ub/lys distance, clash atoms, reference structures and covalent bond.
-    
+
+    The covalent ligand atom name depends on the atom order of each molecule, so pass covalent_yaml
+    (the boltz input yaml of the same molecule) to read the bond constraint instead of hard-coding it.
+
     Press `F1` to see panorama view and `F2` to see closeup view.'''
     try:
         lys_site=int(lys_site)  # pandas may read it as a float (e.g. 185.0)
+        if covalent_yaml:
+            # the ligand atom name follows the atom order of each molecule, so it is read from the boltz input
+            covalent_bond=read_covalent_bond(covalent_yaml)
+            if covalent_bond:
+                covalent_lig_atomname=covalent_bond['ligand'][2]
+                covalent_res_atomname=covalent_bond['protein'][2]
+            else:
+                logging.warning(f'No covalent bond constraint in {covalent_yaml}, the covalent bond is skipped.')
+                covalent_resid=0
         if covalent_resid:
             covalent_resid=int(covalent_resid)
         # panorama view
@@ -361,14 +390,17 @@ def generate_pymol_pse(cif_file:str,lys_site:int,ref_cif_poi:str='',ref_cif_alig
         cmd.remove('ref_* and polymer')
         cmd.set('cartoon_transparency',0.6,'close')
         ## covalent bond
-        if covalent_resid:
+        if covalent_resid and covalent_lig_atomname:
             sele_covalent_res=f'close and chain P and resi {covalent_resid}'
-            if cmd.count_atoms(sele_covalent_res)>0:
+            sele_covalent_lig=f'close and chain L and name {covalent_lig_atomname}'
+            if cmd.count_atoms(sele_covalent_res)>0 and cmd.count_atoms(sele_covalent_lig)>0:
                 cmd.show('sticks',sele_covalent_res)
-                cmd.bond(f'{sele_covalent_res} and name {covalent_res_atomname}',f'close and chain L and name {covalent_lig_atomname}')
+                cmd.bond(f'{sele_covalent_res} and name {covalent_res_atomname}',sele_covalent_lig)
                 cmd.copy_to('cov_poi',sele_covalent_res)
                 cmd.group('close_group','cov_poi','add')
                 cmd.label(f'cov_poi and name {covalent_res_atomname}','oneletter+resi')
+        elif covalent_resid:
+            logging.warning('covalent_resid is set but no ligand atom name is available; pass covalent_yaml or covalent_lig_atomname to draw the covalent bond.')
         ## Ub/Lys distance (skip when the lys residue or Ub G75 is missing)
         sele_lys_poi=f'close and chain P and resi {lys_site}'
         sele_gly_ub='close and chain U and resi 75'
