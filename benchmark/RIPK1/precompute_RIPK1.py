@@ -98,7 +98,7 @@ for name_poi,name_e3,inchikey,lys_site_uniprot in pedia_precompute[['pdbid','E3 
     generate_pymol_pse(best_cif[:-4]+'_uni.cif',lys_site_uniprot,'clean/4neu_ref.cif','',ref_e3_cif)
 
 # NWHM vs estimated log(DC50); marker shape and colour encode the E3 ligase, filled/hollow encodes data availability
-E3_STYLE={'crbn':('o','tab:red','CRBN'),'vhl':('s','tab:blue','VHL')}
+E3_STYLE={'crbn':('o','tab:blue','CRBN'),'vhl':('s','tab:red','VHL')}
 fig,ax=plt.subplots(figsize=(5,5))
 for e3,(marker,color,e3_label) in E3_STYLE.items():
     for censored,quality in [(False,'>=5% at 1 μM'),(True,'<5% at 1 μM')]:

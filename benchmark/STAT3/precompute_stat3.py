@@ -95,8 +95,8 @@ for censored,quality in [(False,f'DC50 ≤ {upper_limit}'),(True,f'DC50 > {upper
     subset=pedia_precompute[pedia_precompute['DC50_censored']==censored]
     if subset.empty:
         continue
-    ax.scatter(subset['score'],subset['logDC50'],s=45,color='tab:red',zorder=3,
-               facecolors='none' if censored else 'tab:red',edgecolors='tab:red',
+    ax.scatter(subset['score'],subset['logDC50'],s=45,color='tab:blue',zorder=3,
+               facecolors='none' if censored else 'tab:blue',edgecolors='tab:blue',
                label=f'{quality} (n = {len(subset)})')
 for level in pedia_precompute.loc[pedia_precompute['DC50_censored'],'logDC50'].dropna().unique():
     ax.axhline(level,color='gray',linestyle='--',linewidth=1.2) # upper limit of the assay

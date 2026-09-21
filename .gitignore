@@ -7,7 +7,7 @@ data/crl_models/*
 data/fgfr4/**
 !data/fgfr4/**/
 !data/fgfr4/fgfr4.a3m
-!data/fgfr4/fgfr4_crbn_AMZUZKXFLXHAHI-UHFFFAOYSA-N_ternary_best_uni.pse
+!data/fgfr4/*.pse
 !data/fgfr4/fgfr4_crbn_AMZUZKXFLXHAHI-UHFFFAOYSA-N_ternary_best_uni.cif
 !data/fgfr4/**/*_0.cif
 !data/fgfr4/**/aff*.json
