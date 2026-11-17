@@ -14,7 +14,7 @@ import pandas as pd
 from scipy import stats
 from detect_pocket import get_pocket_info_from_pdb_info
 from util import update_uniprot_ptm_info,update_uniprot_uid2seq,idxmap_boltz2uniprot
-from util import cif_boltz2uniprot,generate_pymol_pse,get_a3m,smi2inchikey,map_lys_boltz2uniprot_evidence
+from util import cif_boltz2uniprot,generate_pymol_pse,get_a3m,smi2inchikey,map_lys_boltz2uniprot_evidence,e3_uniprot_sequence,read_boltz_chain_sequence
 from reinvent_plugins.components.comp_boltz_fgfr4 import calculate_one_affinity_score
 
 # get PDB file
@@ -85,6 +85,8 @@ print(f'estimated DC50 from the Hill equation (Dmax={DC50_MAX_DEGRADATION:g}%, s
 pedia_precompute.to_csv('ripk1_precompute.csv',index=False)
 
 # generate pse files; skip records whose lys site cannot be mapped to uniprot (e.g. FLAG/gene-edited)
+# E3 uniprot sequences are fetched once per E3 ligase, chain E keeps boltz numbering when a name is unknown
+seq_e3_uniprot_by_name={name_e3:e3_uniprot_sequence(name_e3) for name_e3 in sorted(pedia_precompute['E3 Ligase'].dropna().unique())}
 for name_poi,name_e3,inchikey,lys_site_uniprot in pedia_precompute[['pdbid','E3 Ligase','inchikey','lys_site_uniprot']].itertuples(False):
     if pd.isna(lys_site_uniprot):
         logging.warning(f'Skip pse for {name_poi}_{name_e3}_{inchikey}: lys site cannot be mapped to uniprot (FLAG/gene editing).')
@@ -94,7 +96,8 @@ for name_poi,name_e3,inchikey,lys_site_uniprot in pedia_precompute[['pdbid','E3 
     else:
         ref_e3_cif='../../data/PDB/clean/6gfy_ref.cif'
     best_cif=f'{name_poi}_{name_e3}_{inchikey}_ternary_best.cif'
-    cif_boltz2uniprot(best_cif,ripk1_seq,seq_uniprot)
+    best_yaml=best_cif.replace('_best.cif','.yaml')
+    cif_boltz2uniprot(best_cif,ripk1_seq,seq_uniprot,read_boltz_chain_sequence(best_yaml,'E'),seq_e3_uniprot_by_name.get(name_e3,''))
     generate_pymol_pse(best_cif[:-4]+'_uni.cif',lys_site_uniprot,'clean/4neu_ref.cif','',ref_e3_cif)
 
 # NWHM vs estimated log(DC50); marker shape and colour encode the E3 ligase, filled/hollow encodes data availability

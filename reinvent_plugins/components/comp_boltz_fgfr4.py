@@ -50,7 +50,12 @@ def calculate_one_affinity_score(
     name_e3_origin:str='',
     w_lgkd:float=1,
     w_d2:float=1,
-    w_clash:float=1
+    w_clash:float=1,
+    is_covalent_e3:bool=False,
+    lig_e3_part:str='',
+    lig_e3_warhead_smarts:str='',
+    covalent_resid_e3_can:int=0,
+    covalent_res_atomname_e3:str='SG'
 )-> tuple[float,dict[str,float|str]]:
     '''Calculate NWHM(lgKD_ternary, dist_ub_square,num_clash), each one is normalized. 
     '''
@@ -75,8 +80,15 @@ def calculate_one_affinity_score(
     msa_e3 = os.path.join(msa_path, name_e3 + '.a3m')
     yaml_ternary = os.path.join(
         output_path, f'{name_poi}_{name_e3}_{inchikey}_ternary.yaml')
-    generate_boltz_ternary_yaml(lig_smi, seq_poi, pocket_poi, msa_poi, seq_e3,
-                                pocket_e3, msa_e3, yaml_ternary,is_covalent_poi,lig_poi_part,lig_warhead_smarts,covalent_resid_can,covalent_res_atomname,contact_ppi,template_cif_or_path,template_chain_poi_can,template_chain_e3_can)
+    generate_boltz_ternary_yaml(
+        lig_smi,seq_poi,pocket_poi,msa_poi,seq_e3,pocket_e3,msa_e3,yaml_ternary,
+        is_covalent_poi=is_covalent_poi,lig_poi_part=lig_poi_part,lig_warhead_smarts=lig_warhead_smarts,
+        covalent_resid_can=covalent_resid_can,covalent_res_atomname=covalent_res_atomname,
+        contact_ppi=contact_ppi,template_cif_or_path=template_cif_or_path,
+        template_chain_poi_can=template_chain_poi_can,template_chain_e3_can=template_chain_e3_can,
+        is_covalent_e3=is_covalent_e3,lig_e3_part=lig_e3_part,lig_e3_warhead_smarts=lig_e3_warhead_smarts,
+        covalent_resid_e3_can=covalent_resid_e3_can,covalent_res_atomname_e3=covalent_res_atomname_e3,
+    )
     lgKd_ternary=run_boltz_lgKd_prediction(yaml_ternary,extract_from_precomputed)
     super_scores=run_superpose_calc_best_nobsa(yaml_ternary,generate_bestcif=generate_bestcif,name_e3_origin=name_e3_origin)
     dist_ub_square=super_scores[1]**2
@@ -109,7 +121,7 @@ class Parameters:
     poi_pocket: list[list[int]]
     e3_name: list[str]
     calculate_path: list[str]
-    is_covalent_poi: list[bool]
+    is_covalent_poi: list[bool]|None=None
     lig_poi_part : list[str]|None=None
     lig_warhead_smarts: list[str]|None=None
     covalent_resid_can: list[int]|None=None
@@ -118,6 +130,15 @@ class Parameters:
     w_lgkd:list[float]|None=None
     w_d2:list[float]|None=None
     w_clash:list[float]|None=None
+    is_covalent_e3:list[bool]|None=None
+    lig_e3_part:list[str]|None=None
+    lig_e3_warhead_smarts:list[str]|None=None
+    covalent_resid_e3_can:list[int]|None=None
+    covalent_res_atomname_e3:list[str]|None=None
+    contact_ppi:list[list[list[int]]]|None=None
+    template_cif_or_path:list[str]|None=None
+    template_chain_poi_can:list[str]|None=None
+    template_chain_e3_can:list[str]|None=None
 
 
 
@@ -136,7 +157,7 @@ class BoltzScore:
         self.poi_pocket=parameter.poi_pocket[0]
         self.e3_name=parameter.e3_name[0]
         self.calculate_path=parameter.calculate_path[0] # dir saving poi_name.msa, boltz cif and json files
-        self.is_covalent_poi=is_covalent=parameter.is_covalent_poi[0]
+        self.is_covalent_poi=is_covalent=False if parameter.is_covalent_poi is None else parameter.is_covalent_poi[0]
         self.lig_poi_part =parameter.lig_poi_part[0] if is_covalent else None
         self.lig_warhead_smarts=parameter.lig_warhead_smarts[0] if is_covalent else None
         self.covalent_resid_can=parameter.covalent_resid_can[0] if is_covalent else None
@@ -145,6 +166,15 @@ class BoltzScore:
         self.w_lgkd=1 if parameter.w_lgkd is None else parameter.w_lgkd[0] 
         self.w_d2=1 if parameter.w_d2 is None else parameter.w_d2[0] 
         self.w_clash=1 if parameter.w_clash is None else parameter.w_clash[0] 
+        self.is_covalent_e3=False if parameter.is_covalent_e3 is None else parameter.is_covalent_e3[0]
+        self.lig_e3_part=parameter.lig_e3_part[0] if (self.is_covalent_e3 and parameter.lig_e3_part) else ''
+        self.lig_e3_warhead_smarts=parameter.lig_e3_warhead_smarts[0] if (self.is_covalent_e3 and parameter.lig_e3_warhead_smarts) else ''
+        self.covalent_resid_e3_can=parameter.covalent_resid_e3_can[0] if (self.is_covalent_e3 and parameter.covalent_resid_e3_can) else 0
+        self.covalent_res_atomname_e3=parameter.covalent_res_atomname_e3[0] if (self.is_covalent_e3 and parameter.covalent_res_atomname_e3) else ''
+        self.contact_ppi=[tuple(int(resid) for resid in pair) for pair in parameter.contact_ppi[0]] if parameter.contact_ppi else None
+        self.template_cif_or_path=parameter.template_cif_or_path[0] if parameter.template_cif_or_path else ''
+        self.template_chain_poi_can=parameter.template_chain_poi_can[0] if parameter.template_chain_poi_can else ''
+        self.template_chain_e3_can=parameter.template_chain_e3_can[0] if parameter.template_chain_e3_can else ''
         self.smiles_type = "rdkit_smiles"
         calculate_prefix=os.path.join(self.calculate_path,self.poi_name)
         os.makedirs(self.calculate_path,exist_ok=True)
@@ -161,7 +191,23 @@ class BoltzScore:
 
     @normalize_smiles
     def __call__(self, smilies: list[str]) -> np.array:
-        results = [calculate_one_affinity_score(smi,self.poi_name,self.poi_seq,self.poi_pocket,self.e3_name,output_path=self.calculate_path,msa_path=self.calculate_path,is_covalent_poi=self.is_covalent_poi,lig_poi_part=self.lig_poi_part,lig_warhead_smarts=self.lig_warhead_smarts,covalent_resid_can=self.covalent_resid_can,covalent_res_atomname=self.covalent_res_atomname,generate_bestcif=self.generate_bestcif) for smi in smilies]
+        results = [calculate_one_affinity_score(
+            smi,self.poi_name,self.poi_seq,self.poi_pocket,self.e3_name,
+            output_path=self.calculate_path,msa_path=self.calculate_path,
+            is_covalent_poi=self.is_covalent_poi,lig_poi_part=self.lig_poi_part,
+            lig_warhead_smarts=self.lig_warhead_smarts,
+            covalent_resid_can=self.covalent_resid_can,
+            covalent_res_atomname=self.covalent_res_atomname,
+            generate_bestcif=self.generate_bestcif,
+            is_covalent_e3=self.is_covalent_e3,lig_e3_part=self.lig_e3_part,
+            lig_e3_warhead_smarts=self.lig_e3_warhead_smarts,
+            covalent_resid_e3_can=self.covalent_resid_e3_can,
+            covalent_res_atomname_e3=self.covalent_res_atomname_e3,
+            contact_ppi=self.contact_ppi,
+            template_cif_or_path=self.template_cif_or_path,
+            template_chain_poi_can=self.template_chain_poi_can,
+            template_chain_e3_can=self.template_chain_e3_can,
+        ) for smi in smilies]
         scores = [result[0] for result in results]
         metadata = defaultdict(list)
         for result in results:

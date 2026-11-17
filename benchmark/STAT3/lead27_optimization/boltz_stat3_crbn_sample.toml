@@ -1,0 +1,11 @@
+run_type = "sampling"
+device = "cuda:0"   # set "cpu" when no GPU is available
+json_out_config = "/home/regen/git_develop/potential_linker/benchmark/STAT3/lead27_optimization/stat3_crbn_sampling.json"
+
+[parameters]
+model_file = '/home/regen/git_develop/potential_linker/benchmark/STAT3/lead27_optimization/boltz_stat3_27_crbn.chkpt'   # agent written by the last RL stage
+smiles_file = '/home/regen/git_develop/potential_linker/benchmark/STAT3/lead27_optimization/boltz_stat3_crbn_warhead.smi'
+output_file = '/home/regen/git_develop/potential_linker/benchmark/STAT3/lead27_optimization/stat3_crbn_sampling.csv'
+num_smiles = 200
+unique_molecules = true
+randomize_smiles = false

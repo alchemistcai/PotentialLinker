@@ -2,6 +2,7 @@ from ast import literal_eval
 import warnings
 from pymol import cmd
 from collections import UserDict
+from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 import logging
 import os
@@ -11,6 +12,8 @@ from typing import Iterable
 import urllib.request
 import json
 import time
+import yaml
+import gemmi
 from boltz.data.msa.mmseqs2 import run_mmseqs2
 import pandas as pd
 from rdkit.Chem import MolFromSmiles,MolToInchiKey
@@ -24,6 +27,12 @@ EVD_SILVER=3
 EVD_BRONZE=2
 EVD_OTHER=1
 EVD_NONE=0
+
+# offset added to a boltz resid that the alignment cannot map, so unmatched residues never collide with uniprot numbering
+UNMAPPED_RESI_OFFSET=5000
+
+# uniprot accession of the E3 ligases used by this repo, needed to calibrate chain E to uniprot numbering
+E3_UNIPROT_ID={'crbn':'Q96SW2','vhl':'P40337'}
 
 def smi2inchikey(smiles:str) -> str|None:
     try:
@@ -105,6 +114,65 @@ def idxmap_boltz2uniprot(seq_boltz:str,seq_uni:str) -> dict[int,int]:
         result[boltz_idx]= uni_idx
     return result   
 
+@dataclass
+class ExperimentConstraints:
+    '''Experimental constraints expressed in the boltz chain numbering.
+
+    Build it with `uniprot_to_boltz_constraints`; every attribute can be passed straight to
+    `generate_boltz_ternary_yaml`, `calculate_one_affinity_score` or `generate_pymol_pse`.
+    Only constraints that need the uniprot to boltz remap live here; warhead SMILES, SMARTS and
+    bonding atom names go to the yaml generator directly.
+    '''
+    pocket_poi: list[int] = field(default_factory=list)
+    pocket_e3: list[int] = field(default_factory=list)
+    contact_ppi: list[tuple[int,int]] = field(default_factory=list)
+    covalent_resid_can: int = 0
+    covalent_resid_e3_can: int = 0
+
+
+def uniprot_to_boltz_constraints(
+    seq_poi_boltz:str,seq_poi_uniprot:str,
+    pocket_poi_uniprot:Iterable[int]=(),
+    covalent_resid_poi_uniprot:int=0,
+    seq_e3_boltz:str='',seq_e3_uniprot:str='',
+    pocket_e3_uniprot:Iterable[int]=(),
+    covalent_resid_e3_uniprot:int=0,
+    contact_ppi_uniprot:Iterable[tuple[int,int]]=(),
+) -> ExperimentConstraints:
+    '''Convert experimental uniprot residue numbers into the boltz numbering used by the yaml generator.
+
+    All inputs are uniprot residue numbers.
+
+    Residues in the alignment cannot map are dropped. E3 constraints require both `seq_e3_boltz` and `seq_e3_uniprot`;
+    without them they are dropped.
+    '''
+    uniprot2boltz_poi={uni:boltz for boltz,uni in idxmap_boltz2uniprot(seq_poi_boltz,seq_poi_uniprot).items() if uni>0}
+    uniprot2boltz_e3={}
+    if seq_e3_boltz and seq_e3_uniprot:
+        uniprot2boltz_e3={uni:boltz for boltz,uni in idxmap_boltz2uniprot(seq_e3_boltz,seq_e3_uniprot).items() if uni>0}
+    elif pocket_e3_uniprot or covalent_resid_e3_uniprot or contact_ppi_uniprot:
+        logging.warning('E3 constraints are given but seq_e3_boltz / seq_e3_uniprot is missing; all E3 constraints are dropped.')
+    pocket_poi=[boltz for boltz in (uniprot2boltz_poi.get(int(resid),0) for resid in pocket_poi_uniprot) if boltz]
+    pocket_e3=[]
+    if uniprot2boltz_e3:
+        pocket_e3=[boltz for boltz in (uniprot2boltz_e3.get(int(resid),0) for resid in pocket_e3_uniprot) if boltz]
+    contact_ppi=[]
+    for poi_resid,e3_resid in contact_ppi_uniprot:
+        boltz_poi=uniprot2boltz_poi.get(int(poi_resid),0)
+        boltz_e3=uniprot2boltz_e3.get(int(e3_resid),0) if uniprot2boltz_e3 else 0
+        if boltz_poi and boltz_e3:
+            contact_ppi.append((boltz_poi,boltz_e3))
+    covalent_resid_can=uniprot2boltz_poi.get(int(covalent_resid_poi_uniprot),0) if covalent_resid_poi_uniprot else 0
+    covalent_resid_e3_can=uniprot2boltz_e3.get(int(covalent_resid_e3_uniprot),0) if (covalent_resid_e3_uniprot and uniprot2boltz_e3) else 0
+    return ExperimentConstraints(
+        pocket_poi=pocket_poi,
+        pocket_e3=pocket_e3,
+        contact_ppi=contact_ppi,
+        covalent_resid_can=covalent_resid_can,
+        covalent_resid_e3_can=covalent_resid_e3_can,
+    )
+
+
 def idxmaps(seqs_boltz_and_uniprot_pair:Iterable[tuple[str,str]]):
     '''Align seq_boltz and seq_uniprot pairs and return a dataframe['seq_boltz','seq_uniprot','idxmap'].'''
     stored_file=Path(__file__).parent/'data/ub_site/idx_boltz2uniprot.csv'
@@ -177,6 +245,23 @@ def update_uniprot_uid2seq(uniprot_ids:list[str]):
             df.loc[len(df)]=[uniprot_id,uniprot_seq]
     df.drop_duplicates('UniprotID').to_csv(stored_file,index=False)
     return df
+
+def uniprot_sequence(uniprot_id:str) -> str:
+    '''Return the uniprot sequence of `uniprot_id`, or an empty string when it cannot be fetched.'''
+    df_uid2seq=update_uniprot_uid2seq([uniprot_id])
+    matched=df_uid2seq[df_uid2seq['UniprotID']==uniprot_id]['seq']
+    return matched.iloc[0] if not matched.empty else ''
+
+def e3_uniprot_sequence(name_e3:str) -> str:
+    '''Return the uniprot sequence of the E3 ligase `name_e3`.
+
+    Only the E3 ligases in `E3_UNIPROT_ID` are resolvable; an unknown name returns an empty string,
+    which makes `cif_boltz2uniprot` warn and leave chain E in boltz numbering.'''
+    uniprot_id=E3_UNIPROT_ID.get(name_e3.lower(),'')
+    if not uniprot_id:
+        logging.warning(f'No uniprot accession for E3 ligase `{name_e3}`; known names are {sorted(E3_UNIPROT_ID)}. Its chain cannot be calibrated to uniprot.')
+        return ''
+    return uniprot_sequence(uniprot_id)
 
 def fetch_uniprot_ptm_info(uniprot_id:str) -> dict[int,int]:
     '''Fetch and parse ubiquitinylation info from Uniprot and PTMeXchange.
@@ -296,61 +381,165 @@ def update_all_uniprot_ptm_info(uniprot_ids: list[str], max_workers: int = 10):
     dfs.to_csv('data/ub_site/uniprot_evidences.csv',index=False)
     return dfs
     
-def cif_boltz2uniprot(cif_file:str,seq_poi_boltz:str,seq_poi_uniprot:str):
+def remap_chain_boltz2uniprot(chain:str,seq_boltz:str,seq_uniprot:str) -> int:
+    '''Renumber one chain of the loaded structure from boltz numbering to uniprot numbering.
+
+    Return the number of boltz residues that the alignment leaves unmatched; those residues keep
+    `boltz resid + UNMAPPED_RESI_OFFSET` so they never collide with a genuine uniprot index
+    (unmatched residues come from artificial tags or gene editing).
+    '''
+    df_idxmap=idxmaps([(seq_boltz,seq_uniprot)])
+    matched=df_idxmap[(df_idxmap['seq_boltz']==seq_boltz)&(df_idxmap['seq_uniprot']==seq_uniprot)]
+    idxmap:dict[int,int]=matched.iloc[0]['idxmap'] if not matched.empty else {}
+    cmd.alter(f'chain {chain}',f'resi=int(resi)+{UNMAPPED_RESI_OFFSET}')
+    unmapped_resid=0
+    for idx_boltz in range(1,len(seq_boltz)+1):
+        idx_uniprot=idxmap.get(idx_boltz,-1)
+        if idx_uniprot<=0:
+            unmapped_resid+=1
+            idx_uniprot=idx_boltz+UNMAPPED_RESI_OFFSET
+        cmd.alter(f'chain {chain} and resi {idx_boltz+UNMAPPED_RESI_OFFSET}',f'resi={idx_uniprot}')
+    return unmapped_resid
+
+def cif_boltz2uniprot(cif_file:str,seq_poi_boltz:str,seq_poi_uniprot:str,seq_e3_boltz:str='',seq_e3_uniprot:str=''):
     '''Reindex resid for boltz prediction structures to be according with uniprot.
-    
-    Conversion rate is about 27aa/s.'''
+
+    The POI (chain P) is always remapped. The E3 ligase (chain E) is remapped only when both
+    `seq_e3_boltz` and `seq_e3_uniprot` are given; without that pair chain E keeps the boltz
+    numbering and the skipped calibration is reported through `logging.warning`.
+
+    Conversion rate is about 27aa/s per chain.'''
     cif_file_path=Path(os.path.abspath(cif_file))
     cif_file_uniprot_path=cif_file_path.parent/(cif_file_path.stem+'_uni.cif')
-    df_idxmap=idxmaps([(seq_poi_boltz,seq_poi_uniprot)])
-    idxmap:dict=df_idxmap[(df_idxmap['seq_boltz']==seq_poi_boltz) &(df_idxmap['seq_uniprot']==seq_poi_uniprot)].iloc[0]['idxmap']
     cmd.reinitialize()
     cmd.load(str(cif_file_path))
-    cmd.alter(f'chain P',f'resi=int(resi)+5000')
-    for idx_boltz_python in range(len(seq_poi_boltz)):
-        idx_boltz=idx_boltz_python+1
-        idx_uniprot=idxmap.get(idx_boltz,idx_boltz+5000)
-        # add 5000 if the lys is not in the idxmap, mainly because of artificial gene edition or mutation
-        cmd.alter(f'chain P and resi {idx_boltz+5000}',f'resi={idx_uniprot}')
-        cmd.save(cif_file_uniprot_path)
+    unmapped_poi=remap_chain_boltz2uniprot('P',seq_poi_boltz,seq_poi_uniprot)
+    if unmapped_poi:
+        logging.warning(f'{cif_file_path.name}: {unmapped_poi} POI residues cannot be aligned to uniprot and keep resid + {UNMAPPED_RESI_OFFSET}, mainly because of artificial gene edition or mutation.')
+    if seq_e3_boltz and seq_e3_uniprot:
+        if cmd.count_atoms('chain E')>0:
+            unmapped_e3=remap_chain_boltz2uniprot('E',seq_e3_boltz,seq_e3_uniprot)
+            if unmapped_e3:
+                logging.warning(f'{cif_file_path.name}: {unmapped_e3} E3 residues cannot be aligned to uniprot and keep resid + {UNMAPPED_RESI_OFFSET}, mainly because of artificial gene edition or mutation.')
+        else:
+            logging.warning(f'{cif_file_path.name}: no chain E in the structure; the E3 ligase is not calibrated to uniprot.')
+    elif seq_e3_boltz or seq_e3_uniprot:
+        logging.warning(f'{cif_file_path.name}: both seq_e3_boltz and seq_e3_uniprot are required to calibrate the E3 ligase; chain E keeps the boltz numbering.')
+    else:
+        logging.warning(f'{cif_file_path.name}: no E3 ligase sequence given; chain E keeps the boltz numbering and is NOT calibrated to uniprot.')
+    cmd.save(cif_file_uniprot_path)
 
-def read_covalent_bond(ternary_yaml:str,ligand_chain:str='L') -> dict[str,tuple[str,int,str]]:
-    '''Read the covalent bond constraint of a boltz input yaml.
+def read_boltz_chain_sequence(boltz_yaml:str,chain_id:str) -> str:
+    '''Read the protein sequence of `chain_id` from a boltz input yaml.
 
-    Keys are `ligand` and `protein`, values are (chain, resid, atom name). Residue numbering follows
-    the boltz chain, so the protein resid still needs cif_boltz2uniprot mapping before it matches a
-    *_uni.cif; the ligand side is unaffected. An empty dict means the yaml holds no bond constraint
-    (a non-covalent run).'''
-    bond:dict[str,tuple[str,int,str]]={}
+    Return an empty string when the yaml holds no protein entry for that chain, so the caller can pass
+    the result straight to `cif_boltz2uniprot` and receive its warning about a skipped calibration.'''
+    with open(boltz_yaml,encoding='utf-8') as yaml_file:
+        boltz_config=yaml.safe_load(yaml_file) or {}
+    for entry in boltz_config.get('sequences',[]):
+        protein=entry.get('protein')
+        if protein and chain_id in protein.get('id',[]):
+            return protein.get('sequence','')
+    return ''
+
+def write_boltz_template_cif(
+    cif_file:str,out_cif:str='',
+    required_chains:tuple[str,...]=('P','E'),
+) -> str:
+    '''Write a boltz template CIF from a boltz prediction `*_model_0.cif`.
+
+    Return the path of the written template.'''
+    cif_path=Path(os.path.abspath(cif_file))
+    out_path=Path(out_cif) if out_cif else cif_path.parent/(cif_path.stem+'_template.cif')
+    structure=gemmi.read_structure(str(cif_path))
+    structure.setup_entities()
+    for chain_name in [chain.name for chain in structure[0] if chain.name not in required_chains]:
+        structure[0].remove_chain(chain_name)
+    structure.remove_ligands_and_waters()
+    structure.remove_empty_chains()
+    structure.remove_hydrogens()
+    structure.remove_alternative_conformations()
+    polymer_chains=sorted(chain.name for chain in structure[0] if len(chain.get_polymer())>0)
+    missing=[name for name in required_chains if name not in polymer_chains]
+    if missing:
+        raise ValueError(f'{cif_path.name}: template needs chains {list(required_chains)} but the structure has {polymer_chains}; missing {missing}. Rename them in the source CIF or use the boltz prediction `*_model_0.cif`.')
+    document=structure.make_mmcif_document()
+    document.write_file(str(out_path))
+    block=gemmi.cif.read(str(out_path))[0]
+    entity_ids=block.find_values('_entity_poly.entity_id')
+    sequences=block.find_values('_entity_poly.pdbx_seq_one_letter_code_can') or block.find_values('_entity_poly.pdbx_seq_one_letter_code')
+    if not sequences:
+        raise ValueError(f'{out_path.name}: the template has no _entity_poly sequence, boltz cannot expand its residues. Rebuild it from a CIF that keeps _entity_poly, e.g. the prediction `*_model_0.cif`.')
+    if len(entity_ids)!=len(polymer_chains) or any(len(sequence)<2 for sequence in sequences):
+        raise ValueError(f'{out_path.name}: _entity_poly holds {len(entity_ids)} entries with lengths {[len(sequence) for sequence in sequences]} for {len(polymer_chains)} chains; the source CIF has no usable _entity_poly, use the boltz prediction `*_model_0.cif` instead.')
+    return str(out_path)
+
+
+def read_covalent_bonds(ternary_yaml:str,ligand_chain:str='L') -> list[dict[str,tuple[str,int,str]]]:
+    '''Read every covalent bond constraint of a boltz input yaml.
+
+    Each item holds keys `ligand` and `protein`, values are (chain, resid, atom name). A PROTAC with
+    warheads on both ends yields one item whose protein chain is `P` and one whose protein chain is
+    `E`. Residue numbering follows the boltz chain, so the protein resid still needs
+    `cif_boltz2uniprot` mapping before it matches a `*_uni.cif`; the ligand side is unaffected.
+    An empty list means the yaml holds no bond constraint (a non-covalent run).'''
+    bonds:list[dict[str,tuple[str,int,str]]]=[]
+    sides:list[tuple[str,int,str]]=[]
     with open(ternary_yaml,encoding='utf-8') as yaml_file:
         for line in yaml_file:
             if not line.strip().startswith(('atom1:','atom2:')):
                 continue
             chain,resid,atom_name=[item.strip() for item in line.split('[',1)[1].split(']',1)[0].split(',')]
-            bond['ligand' if chain==ligand_chain else 'protein']=(chain,int(resid),atom_name)
-    return bond
+            sides.append((chain,int(resid),atom_name))
+    ligand_sides=[side for side in sides if side[0]==ligand_chain]
+    protein_sides=[side for side in sides if side[0]!=ligand_chain]
+    for ligand_side,protein_side in zip(ligand_sides,protein_sides):
+        bonds.append({'ligand':ligand_side,'protein':protein_side})
+    return bonds
+
+def read_covalent_bond(ternary_yaml:str,ligand_chain:str='L') -> dict[str,tuple[str,int,str]]:
+    '''Read the first covalent bond constraint of a boltz input yaml.
+
+    Kept for callers that handle a single warhead; use `read_covalent_bonds` when the E3 side may
+    carry its own warhead. An empty dict means the yaml holds no bond constraint.'''
+    bonds=read_covalent_bonds(ternary_yaml,ligand_chain)
+    return bonds[0] if bonds else {}
 
 # the covalent ligand atom name follows the atom order of each molecule, so pass covalent_yaml (the boltz input yaml of the same molecule) to read the bond constraint
-def generate_pymol_pse(cif_file:str,lys_site:int,ref_cif_poi:str='',ref_cif_align_selection:str='',ref_cif_e3:str='',ref_cif_ternary:str='',covalent_resid:int=0,covalent_res_atomname='SG',covalent_lig_atomname:str='',covalent_yaml:str='',):
+def generate_pymol_pse(cif_file:str,lys_site:int,ref_cif_poi:str='',ref_cif_align_selection:str='',ref_cif_e3:str='',ref_cif_ternary:str='',covalent_resid:int=0,covalent_res_atomname='SG',covalent_lig_atomname:str='',covalent_yaml:str='',covalent_e3_resid:int=0,covalent_e3_res_atomname='SG',covalent_e3_lig_atomname:str='',):
     '''Create a pymol project session file, including the predicted machinery+poi structure, Ub/lys distance, clash atoms, reference structures and covalent bond.
 
+    `cif_file` is expected to be the `*_uni.cif` written by `cif_boltz2uniprot`, so chain P and, when
+    E3 sequences were passed there, chain E already carry uniprot residue numbering.
+
     The covalent ligand atom name depends on the atom order of each molecule, so pass covalent_yaml
-    (the boltz input yaml of the same molecule) to read the bond constraint instead of hard-coding it.
+    (the boltz input yaml of the same molecule) to read the bond constraints instead of hard-coding
+    them. A warhead on the E3 side is drawn when `covalent_e3_resid` is set; pass `covalent_yaml` to
+    pick up its atom names, otherwise the E3 warhead is skipped.
 
     Press `F1` to see panorama view and `F2` to see closeup view.'''
     try:
         lys_site=int(lys_site)  # pandas may read it as a float (e.g. 185.0)
         if covalent_yaml:
             # the ligand atom name follows the atom order of each molecule, so it is read from the boltz input
-            covalent_bond=read_covalent_bond(covalent_yaml)
-            if covalent_bond:
-                covalent_lig_atomname=covalent_bond['ligand'][2]
-                covalent_res_atomname=covalent_bond['protein'][2]
-            else:
+            covalent_bonds=read_covalent_bonds(covalent_yaml)
+            if not covalent_bonds:
                 logging.warning(f'No covalent bond constraint in {covalent_yaml}, the covalent bond is skipped.')
                 covalent_resid=0
+                covalent_e3_resid=0
+            else:
+                poi_bonds=[bond for bond in covalent_bonds if bond['protein'][0]=='P']
+                e3_bonds=[bond for bond in covalent_bonds if bond['protein'][0]=='E']
+                if poi_bonds:
+                    covalent_lig_atomname=poi_bonds[0]['ligand'][2]
+                    covalent_res_atomname=poi_bonds[0]['protein'][2]
+                if e3_bonds:
+                    covalent_e3_lig_atomname=e3_bonds[0]['ligand'][2]
+                    covalent_e3_res_atomname=e3_bonds[0]['protein'][2]
         if covalent_resid:
             covalent_resid=int(covalent_resid)
+        if covalent_e3_resid:
+            covalent_e3_resid=int(covalent_e3_resid)
         # panorama view
         cmd.reinitialize()
         cmd.set('label_size',30)
@@ -401,6 +590,18 @@ def generate_pymol_pse(cif_file:str,lys_site:int,ref_cif_poi:str='',ref_cif_alig
                 cmd.label(f'cov_poi and name {covalent_res_atomname}','oneletter+resi')
         elif covalent_resid:
             logging.warning('covalent_resid is set but no ligand atom name is available; pass covalent_yaml or covalent_lig_atomname to draw the covalent bond.')
+        ## E3 covalent bond
+        if covalent_e3_resid and covalent_e3_lig_atomname:
+            sele_covalent_e3_res=f'close and chain E and resi {int(covalent_e3_resid)}'
+            sele_covalent_e3_lig=f'close and chain L and name {covalent_e3_lig_atomname}'
+            if cmd.count_atoms(sele_covalent_e3_res)>0 and cmd.count_atoms(sele_covalent_e3_lig)>0:
+                cmd.show('sticks',sele_covalent_e3_res)
+                cmd.bond(f'{sele_covalent_e3_res} and name {covalent_e3_res_atomname}',sele_covalent_e3_lig)
+                cmd.copy_to('cov_e3',sele_covalent_e3_res)
+                cmd.group('close_group','cov_e3','add')
+                cmd.label(f'cov_e3 and name {covalent_e3_res_atomname}','oneletter+resi')
+        elif covalent_e3_resid:
+            logging.warning('covalent_e3_resid is set but no E3 ligand atom name is available; pass covalent_yaml or covalent_e3_lig_atomname to draw the E3 covalent bond.')
         ## Ub/Lys distance (skip when the lys residue or Ub G75 is missing)
         sele_lys_poi=f'close and chain P and resi {lys_site}'
         sele_gly_ub='close and chain U and resi 75'

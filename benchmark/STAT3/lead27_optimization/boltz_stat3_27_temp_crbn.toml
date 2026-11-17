@@ -1,0 +1,76 @@
+
+run_type = "staged_learning"
+device = "cuda:0"
+tb_logdir = "/home/regen/git_develop/potential_linker/benchmark/STAT3/lead27_optimization/tb_logs"
+json_out_config = "/home/regen/git_develop/potential_linker/benchmark/STAT3/lead27_optimization/_temp_staged_learning.json"
+[parameters]
+
+summary_csv_prefix = "/home/regen/git_develop/potential_linker/benchmark/STAT3/lead27_optimization/stat3_crbn_learning"
+use_checkpoint = true
+purge_memories = false
+
+## LinkInvent
+prior_file = '/home/regen/git_develop/potential_linker/reinvent_prior/linkinvent_transformer_pubchem.prior'
+agent_file = '/home/regen/git_develop/potential_linker/reinvent_prior/linkinvent_transformer_pubchem.prior'
+smiles_file = '/home/regen/git_develop/potential_linker/benchmark/STAT3/lead27_optimization/boltz_stat3_crbn_warhead.smi'
+
+batch_size = 2          # should be 10
+unique_sequences = true
+randomize_smiles = true
+tb_isim = false
+
+[learning_strategy]
+  type = "dap" 
+  sigma = 128
+  rate = 0.0001
+
+
+[diversity_filter] 
+  type = "IdenticalMurckoScaffold"
+  bucket_size = 25 
+  minscore = 0.4 
+  minsimilarity = 0.4
+  penalty_multiplier = 0.5
+
+
+  ### Stage 1
+[[stage]]
+
+chkpt_file = '/home/regen/git_develop/potential_linker/benchmark/STAT3/lead27_optimization/boltz_stat3_27_crbn.chkpt'
+termination = "simple"
+max_score = 0.56  # terminate if this total score is exceeded
+min_steps = 1  # should be 10
+max_steps = 2  # should be 20
+
+[stage.scoring]
+type = "geometric_mean"
+
+[[stage.scoring.component]]
+[stage.scoring.component.BoltzScore]
+[[stage.scoring.component.BoltzScore.endpoint]]
+name = "docking with boltz"
+weight = 1
+params.poi_name='stat3'
+params.poi_seq='GQANHPTAAVVTEKQQMLEQHLQDVRKRVQDLEQKMKVVENLQDDFDFNYKTLKSQGDMQDLNGNNQSVTRQKMQQLEQMLTALDQMRRSIVSELAGLLSAMEYVQKTLTDEELADWKRRQQIACIGGPPNICLDRLENWITSLAESQLQTRQQIKKLEELQQKVSYKGDPIVQHRPMLEERIVELFRNLMKSAFVVERQPCMPMHPDRPLVIKTGVQFTTKVRLLVKFPELNYQLKIKVCIDKDSGDVAALRGSRKFNILGTNTKVMNMEESNNGSLSAEFKHLTLREQRCGNGGRANCDASLIVTEELHLITFETEVYHQGLKIDLETHSLPVVVISNICQMPNAWASILWYNMLTNNPKNVNFFTKPPIGTWDQVAEVLSWQFSSTTKRGLSIEQLTTLAEKLLGPGVNYSGCQITWAKFCKENMAGKGFSFWVWLDNIIDLVKKYILALWNEGYIMGFISKERERAILSTKPPGTFLLRFSESSKEGGVTFTWVEKDISGKTQIQSVEPYTKQQLNNMSFAEIIMGYKIMDATNILVSPLVYLYPDIPKEEAFGKYCR'
+params.poi_pocket= [485, 512, 511, 531, 518, 487, 483, 513, 514, 509, 533, 494, 532, 540, 510, 486]
+# params.is_covalent_poi = true
+# params.lig_poi_part ='N(c1c(c(cc(c1))C)Nc1nc2c(cn1)cc(cc2)c1c(Cl)c(OC)cc(OC)c1Cl)C(=O)CC'
+# params.lig_warhead_smarts='[C:1]-C-C=O'
+# params.covalent_resid_can= 104
+# params.covalent_res_atomname='SG'
+
+# params.is_covalent_e3 = false
+# params.lig_e3_part = ''
+# params.lig_e3_warhead_smarts = ''
+# params.covalent_resid_e3_can = 0
+# params.covalent_res_atomname_e3 = 'SG'
+params.contact_ppi = [[433, 293], [520, 90], [534, 113], [532, 113], [535, 112], [430, 276], [431, 274], [490, 299], [297, 231], [427, 273], [512, 256], [533, 111], [489, 297], [432, 275], [346, 297], [433, 274], [489, 300], [427, 298], [342, 229], [432, 272], [305, 296], [340, 229], [340, 230], [538, 113], [342, 296], [342, 299], [534, 109], [432, 293], [433, 298], [534, 112], [430, 275], [535, 111], [431, 273], [490, 298], [437, 298], [427, 272], [531, 113], [434, 293], [346, 296], [489, 293], [489, 299], [533, 113], [340, 231], [432, 274], [305, 295], [340, 228], [538, 112], [306, 296], [427, 293], [342, 228], [521, 47], [538, 109], [343, 297], [430, 274], [534, 111], [431, 275], [534, 114], [432, 298], [437, 297], [512, 254], [427, 274], [346, 295], [431, 293], [521, 92], [346, 298], [432, 273], [339, 231], [538, 111], [489, 298], [343, 229], [342, 297], [343, 296]]
+params.template_cif_or_path = '/home/regen/git_develop/potential_linker/benchmark/STAT3/lead27_optimization/stat3_id27_template.cif'
+params.template_chain_poi_can = 'P'
+params.template_chain_e3_can = 'E'
+params.e3_name='crbn'
+params.calculate_path='/home/regen/git_develop/potential_linker/benchmark/STAT3/lead27_optimization'
+params.generate_bestcif=true
+params.w_lgkd=1
+params.w_d2=1
+params.w_clash=1

@@ -26,7 +26,11 @@ benchmark/PDB14/*
 !benchmark/PDB14/*.csv
 benchmark/STAT3/**
 !benchmark/STAT3/**/
+!benchmark/STAT3/*/*.smi
+!benchmark/STAT3/*/*.toml
+!benchmark/STAT3/*/*.csv
 !benchmark/STAT3/precompute_stat3.py
+!benchmark/STAT3/*/*.ipynb
 !benchmark/STAT3/*.csv
 !benchmark/STAT3/*uni.cif
 !benchmark/STAT3/6njs.a3m

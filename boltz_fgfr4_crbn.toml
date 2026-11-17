@@ -66,6 +66,18 @@ params.lig_poi_part ='N(c1c(c(cc(c1))C)Nc1nc2c(cn1)cc(cc2)c1c(Cl)c(OC)cc(OC)c1Cl
 params.lig_warhead_smarts='[C:1]-C-C=O'
 params.covalent_resid_can= 104
 params.covalent_res_atomname='SG'
+
+# params.is_covalent_e3 = false         # true adds a bond from the linker to the E3 side-chain atom
+# params.lig_e3_part = ''               # E3 part of the molecule as a valid SMILES without the `*` joint
+# params.lig_e3_warhead_smarts = ''     # reaction site of the E3 warhead, same convention as params.lig_warhead_smarts
+# params.covalent_resid_e3_can = 0      # E3 residue index in the boltz chain E sequence
+# params.covalent_res_atomname_e3 = 'SG'  # E3 side-chain atom that forms the bond
+
+
+# params.contact_ppi = [[<P resid>, <E resid>]]
+# params.template_cif_or_path = '<path to template cif>'
+# params.template_chain_poi_can = 'P'
+# params.template_chain_e3_can = 'E'
 params.e3_name='crbn'
 params.calculate_path='data/fgfr4'
 params.generate_bestcif=true

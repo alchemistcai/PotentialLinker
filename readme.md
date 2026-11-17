@@ -24,7 +24,9 @@ cd ..
 git clone https://github.com/alchemistcai/boltz2_for_protac.git boltz
 cd boltz
 pip install -e .[cuda]
-export BOLTZ_CACHE = /root/autodl-tmp/boltz # change to your boltz cache dir, can be defined in .bashrc
+export BOLTZ_CACHE=/root/autodl-tmp/boltz # bash/zsh, put it in ~/.bashrc; change to your boltz cache dir
+# fish: set -gx BOLTZ_CACHE /root/autodl-tmp/boltz   (put it in ~/.config/fish/config.fish)
+# No spaces around '='. `export BOLTZ_CACHE = /path` exports an empty value, and boltz then falls back to ~/.boltz.
 # The first time you predict using boltz, it will download automatically. Or you can download mols and checkpoints by yourself
 
 # install potential_linker
@@ -63,19 +65,29 @@ isim = [
     - For example, michael receptor "C=C-C(=O)xxxx-linker" should be `C-C-C(=O)xxxx*`.
     - Chloroacetamide "ClCC(=O)NH-xxxx-linker" should be `CC(=O)NH-xxxx*`.
     - Again, CCD gives an reacted product SMILES if it is a covalent ligand.
+    - Both POI and E3 ligands support covalent warhead definitions.
 - Modify `boltz_fgfr4_vhl|crbn.toml` and adjust parameters in `[[stage.scoring.component.BoltzScore.endpoint]]`.
   - Log name, checkpoint names and other related parameters should be altered too.
   - `covalent_xxx` parameters are only required for covalent PROTACs (See fgfr4 examples).
-  - `params.lig_warhead_smarts` is the covalent warhead part after reaction. `[C:1]-C-C=O` is the added warhead and [C:1] is used to mark the covalent connection point.
+  - `params.lig_warhead_smarts` is the covalent warhead part of POI after reaction. `[C:1]-C-C=O` is the added warhead and [C:1] is used to mark the covalent connection point. E3 has similar params.
   - Weight of NWHM scores are 1:1:1 by default (optional). Set to 1:0:0 means calculating lg_kd only.
+  - `[stage.scoring]` also support other scoring items (MolWeight, linker length, rotatable bonds). See Reinvent4 docs for help.
 
-## Sampling PROTACs and clustering
+## Recommending linkers for unknown POI
 
 See [FGFR4.ipynb](FGFR4.ipynb) for examples.
 
 ## Benchmark
 
 See respective scripts in the `benchmark` directory.
+
+### Lead optimization
+
+For STAT3, an example notebook shows how to use the predicted lead (27, SD-965) ternary as a template, to further optimize linkers while maintaining similar geometry features.
+
+For targets that have not been explored at all (such as FGFR4), PL's default weights are usually sufficient.
+
+Note that PL is very strict about small individual term scores, especially atom clashes. For systems that have already been studied systematically, you can customize the weights of each term to match the known structure-activity relationships.
 
 ## Our Boltz Modification
 
@@ -87,9 +99,20 @@ See respective scripts in the `benchmark` directory.
 
 ## Note
 
-Residue idx of Boltz starts from 1, while alignment of biopython starts from 0. I treated them already in the framework. If one want to develop new code, be careful.
+- Residue idx of Boltz starts from 1, while alignment of biopython starts from 0. I treated them already in the framework. If one want to develop new code, be careful.
+- Protein sequences in PDB may have extra artificial residues (expression tags and so on). Be careful if the tags have LYS and were predicted as the PTM sites. See the sequence annotations in PDB if there is a warning.
+- Experimental constraints are normally known in uniprot numbering. `util.uniprot_to_boltz_constraints` aligns both sequences once and returns an `ExperimentConstraints` dataclass whose attributes carry the boltz numbering, so no offset has to be applied by hand:
 
-Protein sequences in PDB may have extra artificial residues (expression tags and so on). Be careful if the tags have LYS and were predicted as the PTM sites. See the sequence annotations in PDB if there is a warning.
+```python
+from util import uniprot_to_boltz_constraints
+constraints=uniprot_to_boltz_constraints(
+    seq_poi_boltz,seq_poi_uniprot,
+    pocket_poi_uniprot=[473,481,483,520],   # measured pocket residues
+    covalent_resid_poi_uniprot=552,         # measured warhead residue
+)
+# ExperimentConstraints(pocket_poi=[25, 33, 35, 72], covalent_resid_can=104, ...)
+constraints.pocket_poi, constraints.covalent_resid_can
+```
 
 ## Acknowledge
 

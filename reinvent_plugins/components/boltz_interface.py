@@ -6,7 +6,7 @@ from pathlib import Path
 import random
 from pymol import cmd
 from Bio.PDB import  PDBParser, NeighborSearch
-from rdkit.Chem import MolFromSmiles,AddHs,MolFromSmarts,AssignStereochemistry,AllChem
+from rdkit.Chem import Mol,MolFromSmiles,AddHs,MolFromSmarts,AssignStereochemistry,AllChem
 
 # pdbid: 8rqa, CRBN-midi with shorter sequence
 POCKET_CRBN = [283, 289, 282, 255, 254, 281, 305, 303, 256]
@@ -17,6 +17,43 @@ POCKET_VHL = [60, 61, 66, 37, 64, 58, 40, 59, 48, 47]
 SEQ_VHL = 'GSMEAGRPRPVLRSVNSREPSQVIFCNRSPRVVLPVWLNFDGEPQPYPTLPPGTGRRIHSYRGHLWLFRDAGTHDGLLVNQTELFVPSLNVDGQPIFANITLPVYTLKERCLQVVRSLVKPENYRRLDIVRSLYEDLEDHPNVQKDLERLTQERIAHQRMGD'
 
 IntOrInf=int|float
+
+
+def find_warhead_atom_name(lig_mol: Mol,lig_part_smiles: str,warhead_smarts: str,part_label: str) -> str|None:
+    '''Return the boltz atom name (e.g. `C12`) of the warhead atom that belongs to `lig_part_smiles`.
+
+    `lig_mol` must carry explicit hydrogens. Return None and log the reason when the part is not a
+    valid SMILES, the part is missing from `lig_mol`, the warhead SMARTS matches nothing, or no
+    warhead match sits fully inside the given part.
+    '''
+    part_mol=MolFromSmiles(lig_part_smiles)
+    if part_mol is None:
+        logging.error(f'Given {part_label} part substructure {lig_part_smiles} is not a valid smiles.')
+        return None
+    part_match=lig_mol.GetSubstructMatch(part_mol)
+    if not part_match:
+        logging.error(f'Given {part_label} part substructure {lig_part_smiles} not found.')
+        return None
+    pattern=MolFromSmarts(warhead_smarts)
+    if pattern is None:
+        logging.error(f'Given {part_label} covalent warhead SMARTS {warhead_smarts} is not valid.')
+        return None
+    all_matches=lig_mol.GetSubstructMatches(pattern)
+    if not all_matches:
+        logging.error(f'Given {part_label} covalent warhead SMARTS {warhead_smarts} not found.')
+        return None
+    part_atom_ids=set(part_match)
+    part_matches=[match for match in all_matches if all(idx in part_atom_ids for idx in match)]
+    if not part_matches:
+        logging.error(f'Given {part_label} covalent warhead SMARTS {warhead_smarts} not in {part_label} part substructure {lig_part_smiles}.')
+        return None
+    target_atom_idx=random.choice(part_matches)[0]
+    canonical_order=AllChem.CanonicalRankAtoms(lig_mol) # get atom name according to boltz schema
+    AssignStereochemistry(lig_mol, force=True, cleanIt=True)
+    for atom, can_idx in zip(lig_mol.GetAtoms(), canonical_order):
+        if atom.GetIdx()==target_atom_idx:
+            return atom.GetSymbol().upper() + str(can_idx + 1)
+    return None
 
 
 def generate_boltz_ternary_yaml(
@@ -37,6 +74,11 @@ def generate_boltz_ternary_yaml(
     template_cif_or_path:str='',
     template_chain_poi_can:str='',
     template_chain_e3_can:str='',
+    is_covalent_e3: bool=False,
+    lig_e3_part: str='',
+    lig_e3_warhead_smarts: str='',
+    covalent_resid_e3_can: int=0,
+    covalent_res_atomname_e3: str='SG',
 ):
     pocket_restraint=''
     if pocket_poi or pocket_e3:
@@ -64,48 +106,32 @@ def generate_boltz_ternary_yaml(
       threshold: 1"""+'\n'
     # trying to parse pymol cif leads to bad RMSD and awkward geometry when the template files miss internal residues 
     covalent_constraint=''
-    if is_covalent_poi:
+    e3_covalent_constraint=''
+    if is_covalent_poi or is_covalent_e3:
         tmp_mol=MolFromSmiles(lig_smi)
         if tmp_mol is None:
             logging.error(f'Given lig_smi {lig_smi} is not a valid smiles.')
             return None
         tmp_mol = AddHs(tmp_mol)
-        poi_mol=MolFromSmiles(lig_poi_part)
-        if poi_mol is None:
-            logging.error(f'Given lig_smi {lig_smi} fails to add Hs.')
-            return None
-        poi_match=tmp_mol.GetSubstructMatch(poi_mol)
-        if not poi_match:
-            logging.error(f'Given Poi part substructure {lig_poi_part} not found.')
-            return None
-        poi_atom_ids=set(poi_match)
-        pattern=MolFromSmarts(lig_warhead_smarts)
-        matches=tmp_mol.GetSubstructMatches(pattern)
-        if not matches:
-            logging.error(f'Given Poi covalent warhead SMARTS {lig_warhead_smarts} not found.')
-            return None
-        poi_matches=[]
-        for match in matches:
-            if match[0] in poi_atom_ids:
-                all_in_poi = all(idx in poi_atom_ids for idx in match)
-                if all_in_poi:
-                    poi_matches.append(match)
-        if not poi_matches:
-            logging.error(f'Given Poi covalent warhead SMARTS {lig_warhead_smarts} not in Poi part substructure {lig_poi_part}.')
-            return None
-        selected_match = random.choice(poi_matches)
-        target_atom_idx = selected_match[0]
-        canonical_order = AllChem.CanonicalRankAtoms(tmp_mol) # get atom name according to boltz schema
-        AssignStereochemistry(tmp_mol, force=True, cleanIt=True)
-        atom_name_to_idx = {}
-        for atom, can_idx in zip(tmp_mol.GetAtoms(), canonical_order):
-            atom_name = atom.GetSymbol().upper() + str(can_idx + 1)
-            atom_name_to_idx[atom.GetIdx()] = atom_name
-        target_atom_name = atom_name_to_idx.get(target_atom_idx)
-        covalent_constraint=f"""  - bond:
+        if is_covalent_poi:
+            target_atom_name=find_warhead_atom_name(tmp_mol,lig_poi_part,lig_warhead_smarts,'Poi')
+            if target_atom_name is None:
+                return None
+            covalent_constraint=f"""  - bond:
       atom1: [L, 1, {target_atom_name}]
       atom2: [P, {covalent_resid_can}, {covalent_res_atomname}]"""+'\n'
-    constraint_header='constraints:\n' if any((pocket_restraint,ppi_restraint,template_restraint,is_covalent_poi)) else ''
+        if is_covalent_e3:
+            if not (lig_e3_part and lig_e3_warhead_smarts and covalent_resid_e3_can):
+                logging.warning('is_covalent_e3 is set but lig_e3_part / lig_e3_warhead_smarts / covalent_resid_e3_can is missing; the E3 covalent bond is skipped.')
+            else:
+                target_atom_name=find_warhead_atom_name(tmp_mol,lig_e3_part,lig_e3_warhead_smarts,'E3')
+                if target_atom_name is None:
+                    return None
+                e3_covalent_constraint=f"""  - bond:
+      atom1: [L, 1, {target_atom_name}]
+      atom2: [E, {covalent_resid_e3_can}, {covalent_res_atomname_e3}]"""+'\n'
+    constraint_header='constraints:\n' if any((pocket_restraint,ppi_restraint,template_restraint,covalent_constraint,e3_covalent_constraint)) else ''
+    e3_bond_doc='  # The E3 covalent bond is optional: pass is_covalent_e3, lig_e3_part, lig_e3_warhead_smarts and\n  # covalent_resid_e3_can to emit it; it is omitted when they are left empty.\n' if constraint_header else ''
     yaml_config = f'''sequences:
   - protein:
       id: [P]
@@ -118,7 +144,7 @@ def generate_boltz_ternary_yaml(
   - ligand:
       id: [L]
       smiles: '{lig_smi}'
-{constraint_header}{covalent_constraint}{pocket_restraint}{ppi_restraint}{template_restraint}properties:
+{constraint_header}{e3_bond_doc}{covalent_constraint}{e3_covalent_constraint}{pocket_restraint}{ppi_restraint}{template_restraint}properties:
   - affinity:
       binder: L
 '''
